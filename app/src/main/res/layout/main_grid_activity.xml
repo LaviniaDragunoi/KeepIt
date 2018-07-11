@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/today_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0.7"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/today_icon"
+        tools:ignore="MissingConstraints,VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/today_title"
+        android:layout_width="103dp"
+        android:layout_height="31dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="@string/todays_name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/today_image"
+        app:layout_constraintStart_toStartOf="@+id/today_image"
+        app:layout_constraintTop_toBottomOf="@+id/today_image" />
+
+    <ImageView
+        android:id="@+id/birthday_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_margin="8dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0.7"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_creator="@+id/today_title"
+        app:layout_constraintEnd_toEndOf="@+id/today_title"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="@+id/today_title"
+        app:layout_constraintTop_toBottomOf="@+id/today_title"
+        app:srcCompat="@drawable/birthday"
+        tools:ignore="MissingConstraints,VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/birthday_title"
+        android:layout_width="103dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="Birthdays"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/birthday_image"
+        app:layout_constraintStart_toStartOf="@+id/birthday_image"
+        app:layout_constraintTop_toBottomOf="@+id/birthday_image" />
+
+    <ImageView
+        android:id="@+id/meetings_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_margin="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.7"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toTopOf="@+id/today_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/today_image"
+        app:srcCompat="@drawable/people"
+        tools:ignore="MissingConstraints,VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/meetings_title"
+        android:layout_width="103dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="Meetings"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/today_title"
+        app:layout_constraintEnd_toEndOf="@+id/meetings_image"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="@+id/meetings_image" />
+
+    <ImageView
+        android:id="@+id/notes_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.7"
+        app:layout_constraintBottom_toBottomOf="@+id/birthday_image"
+        app:layout_constraintEnd_toEndOf="@+id/meetings_image"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/meetings_image"
+        app:layout_constraintTop_toBottomOf="@+id/meetings_title"
+        app:srcCompat="@drawable/note_icon"
+        tools:ignore="VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/notes_title"
+        android:layout_width="103dp"
+        android:layout_height="31dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="@string/notes_name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/birthday_title"
+        app:layout_constraintEnd_toEndOf="@+id/notes_image"
+        app:layout_constraintStart_toStartOf="@+id/notes_image" />
+</android.support.constraint.ConstraintLayout>

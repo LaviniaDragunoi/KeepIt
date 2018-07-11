@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">KeepIt</string>
+    <string name="about">About</string>
+    <string name="home_name">Home</string>
+    <string name="todays_name">Today\'s</string>
+    <string name="meetings_name">Meetings</string>
+    <string name="birthday_name">Birthdays</string>
+    <string name="notes_name">Notes</string>
+    <string name="about_text">KeepIt is your personal agenda that keeps everything together and helps
+        you with your busy life.\nYou can enjoy your life because KeepIt is keeping you organized.\n\nThe
+        paid version keeps you far from ads.\n\nEnjoy!</string>
+    <string name="paid_version">Paid version</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_today">Add for today\'s</string>
+    <string name="add_meeting">Add meeting</string>
+    <string name="add_birthday">Add birthday</string>
+    <string name="add_note">Add note</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="date_title">Date</string>
+    <string name="time_title">Time</string>
+    <string name="add_time">Add time</string>
+    <string name="person_title">Name</string>
+    <string name="add_person_name">Add her/his name</string>
+    <string name="title_of_the_meeting">Meeting\'s name</string>
+    <string name="add_title">Add title</string>
+    <string name="meetings_location">Location</string>
+    <string name="add_location">Add location</string>
+    <string name="date_pattern">DD/MM/YYYY</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="age">Age</string>
+    <string name="send_message">Send message</string>
+    <string name="title_of_the_note">Note title</string>
+    <string name="deadline_title">Deadline</string>
+    <string name="add_text_note">Add note</string>
+</resources>

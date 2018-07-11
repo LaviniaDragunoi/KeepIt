@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    tools:context=".activities.TodaysActivity">
+
+    <TextView
+        android:id="@+id/todays_date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/date_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/todays_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_alignBaseline="@id/todays_date_text_view"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+    <Button
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:layout_height="wrap_content"
+        android:text="@string/yesterday"
+        android:background="@color/backgroundColor"
+        android:elevation="8dp"
+        android:focusableInTouchMode="true"
+        tools:targetApi="lollipop"
+        android:drawableLeft="@drawable/ic_navigate_prev"
+        tools:ignore="ButtonStyle,RtlHardcoded" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/ic_navigate_next"
+            android:text="@string/tomorrow"
+            android:background="@color/backgroundColor"
+            android:elevation="8dp"
+            android:focusableInTouchMode="true"
+            tools:targetApi="lollipop"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
+
+    </LinearLayout>
+</RelativeLayout>

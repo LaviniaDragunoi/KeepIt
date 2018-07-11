@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AddTodayActivity"
+    android:orientation="vertical"
+    android:background="@color/backgroundColor">
+
+    <Button
+        android:id="@+id/meeting_button"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor"
+        android:focusableInTouchMode="true"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:elevation="8dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/add_meeting"
+        android:drawableBottom="@drawable/people"
+        tools:targetApi="o" />
+
+    <Button
+        android:id="@+id/birthday_button"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:elevation="8dp"
+        android:focusableInTouchMode="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/add_birthday"
+        android:drawableBottom="@drawable/birthday"
+        tools:targetApi="lollipop" />
+
+    <Button
+        android:id="@+id/note_button"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:elevation="8dp"
+        android:focusableInTouchMode="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/add_note"
+        android:drawableBottom="@drawable/note_icon"
+        tools:targetApi="lollipop" />
+
+
+</LinearLayout>

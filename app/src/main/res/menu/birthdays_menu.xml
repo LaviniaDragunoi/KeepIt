@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_delete_from_birthdays"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_add_from_birthdays"
+        android:title="@string/add"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_home_b"
+        android:title="@string/home_name"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_todays_b"
+        android:title="@string/todays_name"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_meetings_b"
+        android:title="@string/meetings_name"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_notes_b"
+        android:title="@string/notes_name"
+        app:showAsAction="never"/>
+
+
+</menu>
