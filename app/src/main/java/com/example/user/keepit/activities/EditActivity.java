@@ -1,17 +1,14 @@
 package com.example.user.keepit.activities;
 
 import android.content.Intent;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
 
 import com.example.user.keepit.R;
 import com.example.user.keepit.fragment.BirthdayFragment;
-import com.example.user.keepit.fragment.MeetingDatePickerFragment;
 import com.example.user.keepit.fragment.MeetingFragment;
 import com.example.user.keepit.fragment.NoteFragment;
 
@@ -28,10 +25,9 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         if(intent != null){
-            FragmentManager fragmentManager = getSupportFragmentManager();
             if(intent.hasExtra(MEETING_BOOLEAN)){
                 setTitle(R.string.add_meeting);
                 MeetingFragment addMeetingFragment = new MeetingFragment();
@@ -53,15 +49,6 @@ public class EditActivity extends AppCompatActivity {
             }
         }
     }
-
-    //Inflating the menu bar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_menu, menu);
-        return true;
-    }
-
 
 
 }

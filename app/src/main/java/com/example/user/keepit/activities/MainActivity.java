@@ -1,5 +1,6 @@
 package com.example.user.keepit.activities;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +15,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.user.keepit.BuildConfig;
 import com.example.user.keepit.R;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +36,21 @@ ImageView notesLogo;
 @BindView(R.id.fab)
     FloatingActionButton fab;
     private Intent intent;
+
+    //Method used for debugging Room Db purposes
+    public static void setInMemoryRoomDatabases(SupportSQLiteDatabase... database) {
+        if (BuildConfig.DEBUG) {
+            try {
+                Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+                Class[] argTypes = new Class[]{HashMap.class};
+                HashMap<String, SupportSQLiteDatabase> inMemoryDatabases = new HashMap<>();
+                // set your inMemory databases
+                inMemoryDatabases.put("InMemoryOne.db", database[0]);
+                Method setRoomInMemoryDatabase = debugDB.getMethod("setInMemoryRoomDatabases", argTypes);
+                setRoomInMemoryDatabase.invoke(null, inMemoryDatabases);
+            } catch (Exception ignore) { }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +93,9 @@ ImageView notesLogo;
                 startActivity(intent);
             }
         });
+
+        //Method called for debugging Room DB
+        setInMemoryRoomDatabases();
     }
 
     //Inflating the menu bar
