@@ -17,6 +17,7 @@ public abstract class EventDao {
     @Query("DELETE FROM events")
     public abstract void deleteAll();
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertEvents(EventsEntity eventsEntity);
 
@@ -35,6 +36,9 @@ public abstract class EventDao {
     @Query("SELECT * FROM events")
     public abstract LiveData<List<MeetingsEntity>> loadMeetings();
 
+    @Query("SELECT * FROM events")
+    public abstract LiveData<List<BirthdayEntity>> loadBirthdays();
+
     @Query("SELECT * FROM events WHERE id = :dayId")
     @Transaction
     public abstract EventsDetails getEventsByDate(int dayId);
@@ -50,4 +54,7 @@ public abstract class EventDao {
     @Transaction
     public abstract LiveData<MeetingsEntity> getMeetingByIdOfDay(int dayId);
 
+
+    @Query("SELECT * FROM events")
+    public abstract LiveData<List<NoteEntity>> loadNotes();
 }

@@ -26,6 +26,7 @@ public class EditMeetingViewModel extends ViewModel{
     private Repository mRepository;
     private int mDayId;
     private LiveData<MeetingsEntity> meetingEntity;
+    public int dayId;
 
     public EditMeetingViewModel(Repository repository, int dayId){
         mRepository = repository;
@@ -37,4 +38,7 @@ public class EditMeetingViewModel extends ViewModel{
         return mRepository.getMeetingsLiveDataList();
     }
 
+    public void setMeetingEntity(MeetingsEntity meetingEntity){
+        mRepository.addMeeting(meetingEntity);
+    }
 }

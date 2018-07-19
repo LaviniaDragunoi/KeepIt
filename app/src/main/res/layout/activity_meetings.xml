@@ -14,7 +14,7 @@
         android:layout_marginTop="16dp"/>
 
     <TextView
-        android:id="@+id/empty_list_textView"
+        android:id="@+id/empty_meeting_list_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

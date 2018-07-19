@@ -2,7 +2,6 @@ package com.example.user.keepit.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.icu.util.ValueIterator;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,11 +15,12 @@ import com.example.user.keepit.database.BirthdayEntity;
 import com.example.user.keepit.database.MeetingsEntity;
 import com.example.user.keepit.database.NoteEntity;
 
+import java.time.Period;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -250,14 +250,9 @@ public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 
     @SuppressLint("NewApi")
-    public int getAge(Date birthdate) {
+    public int getAge(Date birthdayDate) {
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(birthdate);
-        calendar.add(Calendar.YEAR, 1);
-        Date nextBirthday = calendar.getTime();
-
-        return Math.toIntExact(nextBirthday.getTime() - birthdate.getTime());
+       return 0;
     }
 
     public class NoteViewHolder extends RecyclerView.ViewHolder {

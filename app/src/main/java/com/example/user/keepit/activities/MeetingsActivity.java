@@ -37,8 +37,8 @@ import static com.example.user.keepit.activities.AddTodayActivity.MEETING_ID;
 public class MeetingsActivity extends AppCompatActivity {
 @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
-@BindView(R.id.empty_list_textView)
-    TextView emptyListTV;
+@BindView(R.id.empty_meeting_list_textView)
+    TextView emptyMeetingListTV;
     private int meetingId = DEFAULT_ID;
     private List<MeetingsEntity> meetingsList;
     private EditMeetingViewModel mViewModel;
@@ -69,7 +69,7 @@ public class MeetingsActivity extends AppCompatActivity {
                 meetingsRecyclerView.setAdapter(new ListsAdapter(this, objectList));
             }else {
                 Toast.makeText(getApplicationContext(), "Nu ai lista pt display", Toast.LENGTH_LONG).show();
-                emptyListTV.setVisibility(View.VISIBLE);
+                emptyMeetingListTV.setVisibility(View.VISIBLE);
             }
         });
 
@@ -101,6 +101,7 @@ public class MeetingsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_delete_from_meetings:
                 //delete items from meetings list
+                deleteAll();
                 return true;
             case R.id.action_add_from_meetings:
                 Intent intent = new Intent(this, EditActivity.class);
@@ -126,5 +127,9 @@ public class MeetingsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void deleteAll() {
+        mRepository.delete();
     }
 }

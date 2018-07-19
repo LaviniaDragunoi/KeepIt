@@ -4,9 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
 import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.database.BirthdayEntity;
 import com.example.user.keepit.database.EventDao;
 import com.example.user.keepit.database.EventsEntity;
 import com.example.user.keepit.database.MeetingsEntity;
+import com.example.user.keepit.database.NoteEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -49,7 +51,10 @@ public class Repository {
         });
         mainEventsList.observeForever(eventsEntityList -> {
             if(eventsEntityList != null && eventsEntityList.size() > 0){
-                mAppExecutors.diskIO().execute(this::addToDatabaseNewEntry);
+                mAppExecutors.diskIO().execute(() ->{
+addToDatabaseNewEntry();
+
+                });
             }else mainEventsList.setValue(null);
         });
         return mainEventsList;
@@ -59,8 +64,14 @@ public class Repository {
         mEventDao.loadAllEvents();
     }
 
+    public void writeMeetingInDB(MeetingsEntity meetingsEntity){
+        mEventDao.insertMeeting(meetingsEntity);
+    }
     public LiveData<List<MeetingsEntity>> getMeetingsLiveDataList(){
         return mEventDao.loadMeetings();
+    }
+    public void delete(){
+        mEventDao.deleteAll();
     }
     public int getEventId(Date date){
        if(mEventDao.getEventEntityByDate(date) == null){
@@ -79,4 +90,15 @@ public class Repository {
         mEventDao.insertMeeting(entity);
     }
 
+    public void addMeeting(MeetingsEntity meetingEntity) {
+        mEventDao.insertMeeting(meetingEntity);
+    }
+
+    public LiveData<List<BirthdayEntity>> getBirthdaysLiveDataList() {
+        return mEventDao.loadBirthdays();
+    }
+
+    public LiveData<List<NoteEntity>> getNotesLiveDataList() {
+        return mEventDao.loadNotes();
+    }
 }

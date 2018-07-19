@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventsEntity;
 import com.example.user.keepit.database.MeetingsEntity;
@@ -43,6 +44,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private int mMeetingId = DEFAULT_MEETING_ID;
     private AppRoomDatabase roomDb;
     private EditMeetingViewModel mViewModel;
+    private Repository mRepository;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -68,7 +70,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             }
         });
 
-        mViewModel = ViewModelProviders.of(getActivity()).get(EditMeetingViewModel.class);
+//        mViewModel = ViewModelProviders.of(getActivity()).get(EditMeetingViewModel.class);
         return rootView;
     }
 
@@ -133,5 +135,13 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         mViewModel.location = meetingLocationEditText.getText().toString();
         mViewModel.date = meetingDateDate;
         mViewModel.time = meetingTimeString;
+        mViewModel.dayId = mRepository.getEventId(mViewModel.date);
+        MeetingsEntity meetingsEntity = new MeetingsEntity(mViewModel.dayId, mViewModel.date, mViewModel.meetingTitle,
+                mViewModel.meetingPersonName, mViewModel.time, mViewModel.location);
+        mViewModel.setMeetingEntity(meetingsEntity);
     }
+    private void deleteMeeting() {
+
+    }
+
 }
