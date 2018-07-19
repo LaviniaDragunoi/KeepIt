@@ -10,12 +10,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListsAdapter;
+import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.MeetingsEntity;
 import com.example.user.keepit.viewModels.EditMeetingViewModel;
+import com.example.user.keepit.viewModels.EditViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +37,18 @@ import static com.example.user.keepit.activities.AddTodayActivity.MEETING_ID;
 public class MeetingsActivity extends AppCompatActivity {
 @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
+@BindView(R.id.empty_list_textView)
+    TextView emptyListTV;
     private int meetingId = DEFAULT_ID;
     private List<MeetingsEntity> meetingsList;
     private EditMeetingViewModel mViewModel;
+    private Repository mRepository;
+    private EditViewModelFactory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meetings);
-
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.meetings_name));
@@ -51,13 +60,16 @@ public class MeetingsActivity extends AppCompatActivity {
                 LinearLayoutManager(this);
         meetingsRecyclerView.setLayoutManager(layoutManagerReviews);
         //Get the meetingList to set the adapter for
-
-        mViewModel = ViewModelProviders.of(this).get(EditMeetingViewModel.class);
-        mViewModel.getMeetingList().observe(this, meetingsList ->{
+        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
+        AppExecutors executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        mRepository.getMeetingsLiveDataList().observe(this, meetingsList ->{
             if(meetingsList != null && meetingsList.size() > 0){
-                meetingsRecyclerView.setAdapter(new ListsAdapter(this, convertMeetingListToObjectList(meetingsList)));
+                List<Object> objectList =  convertMeetingListToObjectList(meetingsList);
+                meetingsRecyclerView.setAdapter(new ListsAdapter(this, objectList));
             }else {
                 Toast.makeText(getApplicationContext(), "Nu ai lista pt display", Toast.LENGTH_LONG).show();
+                emptyListTV.setVisibility(View.VISIBLE);
             }
         });
 

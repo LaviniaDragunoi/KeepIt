@@ -33,5 +33,8 @@ public class EditMeetingViewModel extends ViewModel{
         meetingEntity = repository.getMeetingByDayId(dayId);
     }
 
+    public LiveData<List<MeetingsEntity>> getMeetingsList(){
+        return mRepository.getMeetingsLiveDataList();
+    }
 
 }

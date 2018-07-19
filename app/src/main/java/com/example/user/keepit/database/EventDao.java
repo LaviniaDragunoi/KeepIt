@@ -32,6 +32,9 @@ public abstract class EventDao {
     @Query("SELECT * FROM events")
     public abstract LiveData<List<EventsEntity>> loadAllEvents();
 
+    @Query("SELECT * FROM events")
+    public abstract LiveData<List<MeetingsEntity>> loadMeetings();
+
     @Query("SELECT * FROM events WHERE id = :dayId")
     @Transaction
     public abstract EventsDetails getEventsByDate(int dayId);

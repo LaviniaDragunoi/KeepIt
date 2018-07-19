@@ -59,6 +59,9 @@ public class Repository {
         mEventDao.loadAllEvents();
     }
 
+    public LiveData<List<MeetingsEntity>> getMeetingsLiveDataList(){
+        return mEventDao.loadMeetings();
+    }
     public int getEventId(Date date){
        if(mEventDao.getEventEntityByDate(date) == null){
            //Add new eventEntity that has new id and a new Date

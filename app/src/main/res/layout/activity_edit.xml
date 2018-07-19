@@ -18,4 +18,5 @@
         android:id="@+id/add_note_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </FrameLayout>
