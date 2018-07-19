@@ -14,20 +14,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AddTodayActivity extends AppCompatActivity {
-    public static final String BIRTHDAY_BOOLEAN = "birthdayBoolean";
+
     @BindView(R.id.meeting_button)
     Button addMeetingButton;
+    public static final String MEETING_ID = "meetingId";
+    public final static int DEFAULT_ID = -1;
+    private int meetingId = DEFAULT_ID;
+
 @BindView(R.id.birthday_button)
 Button addBirthdayButton;
+    public static final String BIRTHDAY_ID = "birthdayId";
+    private int birthdayId = DEFAULT_ID;
 
     @BindView(R.id.note_button)
     Button addNoteButton;
-    public static final String NOTE_BOOLEAN = "noteBoolean";
-    boolean noteBoolean = false;
+    public static final String NOTE_ID = "noteId";
+    private int noteId = DEFAULT_ID;
 
-public static final String MEETING_BOOLEAN = "meetingBoolean";
-boolean meetingBoolean = false;
-    private boolean birthdayBoolean = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,27 +43,24 @@ boolean meetingBoolean = false;
         addMeetingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                meetingBoolean = true;
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(MEETING_BOOLEAN, meetingBoolean);
+                intent.putExtra(MEETING_ID, DEFAULT_ID);
                 startActivity(intent);
             }
         });
         addBirthdayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                birthdayBoolean = true;
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(BIRTHDAY_BOOLEAN, birthdayBoolean);
+                intent.putExtra(BIRTHDAY_ID, DEFAULT_ID);
                 startActivity(intent);
             }
         });
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                noteBoolean = true;
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(NOTE_BOOLEAN, noteBoolean);
+                intent.putExtra(NOTE_ID, DEFAULT_ID);
                 startActivity(intent);
             }
         });

@@ -49,24 +49,31 @@ public class Repository {
         });
         mainEventsList.observeForever(eventsEntityList -> {
             if(eventsEntityList != null && eventsEntityList.size() > 0){
-                mAppExecutors.diskIO().execute(() ->{
-
-
-                });
+                mAppExecutors.diskIO().execute(this::addToDatabaseNewEntry);
             }else mainEventsList.setValue(null);
         });
         return mainEventsList;
     }
-    public void addEventsLisToDatabase(Date date){
+
+    private void addToDatabaseNewEntry() {
+        mEventDao.loadAllEvents();
+    }
+
+    public int getEventId(Date date){
        if(mEventDao.getEventEntityByDate(date) == null){
            //Add new eventEntity that has new id and a new Date
            EventsEntity newEvent = new EventsEntity(date);
-           mRoomDB.eventDao().insertEvents(newEvent);
-
-       }
+           mEventDao.insertEvents(newEvent);
+           return newEvent.getId();
+       }else return mEventDao.getEventEntityByDate(date).getId();
     }
 
-    public void addMeetingToDB(MeetingsEntity meeting){
-        mRoomDB.eventDao().insertMeeting(meeting);
+    public LiveData<MeetingsEntity>  getMeetingByDayId(int dayId){
+        return mEventDao.getMeetingByIdOfDay(dayId);
     }
+
+    public void initializeMeeting(MeetingsEntity entity){
+        mEventDao.insertMeeting(entity);
+    }
+
 }

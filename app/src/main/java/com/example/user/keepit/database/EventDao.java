@@ -42,4 +42,9 @@ public abstract class EventDao {
     @Query("SELECT * FROM events WHERE sameDate = :date")
     @Transaction
     public abstract EventsEntity getEventEntityByDate(Date date);
+
+    @Query("SELECT * FROM events WHERE id = :dayId")
+    @Transaction
+    public abstract LiveData<MeetingsEntity> getMeetingByIdOfDay(int dayId);
+
 }

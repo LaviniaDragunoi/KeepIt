@@ -16,12 +16,12 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.NOTE_BOOLEAN;
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
+import static com.example.user.keepit.activities.AddTodayActivity.NOTE_ID;
 
 public class NotesActivity extends AppCompatActivity {
     @BindView(R.id.notes_recycler_view)
     RecyclerView notesRecyclerView;
-    private boolean noteBoolean= false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,8 @@ public class NotesActivity extends AppCompatActivity {
                 //delete from notes list
                 return true;
             case R.id.action_add_from_notes:
-                noteBoolean = true;
                 Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(NOTE_BOOLEAN, noteBoolean);
+                intent.putExtra(NOTE_ID, DEFAULT_ID);
                 startActivity(intent);
                 return true;
             case R.id.action_home_n:

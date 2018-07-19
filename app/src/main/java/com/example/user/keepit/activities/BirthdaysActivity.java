@@ -16,13 +16,12 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.user.keepit.activities.AddTodayActivity.BIRTHDAY_BOOLEAN;
+import static com.example.user.keepit.activities.AddTodayActivity.BIRTHDAY_ID;
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 
 public class BirthdaysActivity extends AppCompatActivity {
 @BindView(R.id.birthdays_recycler_view)
     RecyclerView birthdaysRecyclerView;
-    private boolean birthdayBoolean = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +52,8 @@ public class BirthdaysActivity extends AppCompatActivity {
                 //delete from list what was selected
                 return true;
             case R.id.action_add_from_birthdays:
-                birthdayBoolean = true;
                 Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(BIRTHDAY_BOOLEAN, birthdayBoolean);
+                intent.putExtra(BIRTHDAY_ID, DEFAULT_ID);
                 startActivity(intent);
                 return true;
             case R.id.action_home_b:

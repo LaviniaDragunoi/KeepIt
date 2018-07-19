@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -26,12 +29,15 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
 
     @BindView(R.id.picker_note_deadline)
     TextView noteDeadline;
+    private Date noteDeadlineDate;
+
     //Empty constructor;
     public NoteFragment(){}
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.note_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
+        setHasOptionsMenu(true);
         noteDeadline = rootView.findViewById(R.id.picker_note_deadline);
         noteDeadline.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +58,38 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
 
     @Override
     public void onDateSelected(Date date, String dateString) {
-        noteDeadline.setText(date.toString());
+        noteDeadlineDate = date;
+        noteDeadline.setText(dateString);
+    }
+
+
+    //Inflating the menu bar
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.edit_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    //Creating Intents for each menu item.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                //delete items from meetings list
+                return true;
+            case R.id.action_save:
+                saveNote();
+                return true;
+            case R.id.action_share:
+                //share meeting
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void saveNote() {
+
     }
 }

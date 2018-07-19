@@ -1,27 +1,39 @@
 package com.example.user.keepit.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.user.keepit.R;
+import com.example.user.keepit.adapters.ListsAdapter;
+import com.example.user.keepit.database.MeetingsEntity;
+import com.example.user.keepit.viewModels.EditMeetingViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.MEETING_BOOLEAN;
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
+import static com.example.user.keepit.activities.AddTodayActivity.MEETING_ID;
+
 
 public class MeetingsActivity extends AppCompatActivity {
 @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
-    private boolean meetingBoolean = false;
+    private int meetingId = DEFAULT_ID;
+    private List<MeetingsEntity> meetingsList;
+    private EditMeetingViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +47,33 @@ public class MeetingsActivity extends AppCompatActivity {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
         meetingsRecyclerView.addItemDecoration(itemDecoration);
+        RecyclerView.LayoutManager layoutManagerReviews = new
+                LinearLayoutManager(this);
+        meetingsRecyclerView.setLayoutManager(layoutManagerReviews);
+        //Get the meetingList to set the adapter for
+
+        mViewModel = ViewModelProviders.of(this).get(EditMeetingViewModel.class);
+        mViewModel.getMeetingList().observe(this, meetingsList ->{
+            if(meetingsList != null && meetingsList.size() > 0){
+                meetingsRecyclerView.setAdapter(new ListsAdapter(this, convertMeetingListToObjectList(meetingsList)));
+            }else {
+                Toast.makeText(getApplicationContext(), "Nu ai lista pt display", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
+
+    /**
+     * Method that will convert the meetings list into an object list that will be used to bind
+     * data into ListsAdapter that is a multi objects(meetings, birthday, note) used adapter
+     *
+     * @param meetingsEntityList the list to be converted
+     * @return the object list, the result of conversion
+     */
+    public List<Object> convertMeetingListToObjectList(List<MeetingsEntity> meetingsEntityList) {
+        return new ArrayList<>(meetingsEntityList);
+    }
+
     //Inflating the menu bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -54,9 +91,8 @@ public class MeetingsActivity extends AppCompatActivity {
                 //delete items from meetings list
                 return true;
             case R.id.action_add_from_meetings:
-                meetingBoolean = true;
                 Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(MEETING_BOOLEAN, meetingBoolean);
+                intent.putExtra(MEETING_ID, DEFAULT_ID);
                 startActivity(intent);
                 return true;
             case R.id.action_home_m:

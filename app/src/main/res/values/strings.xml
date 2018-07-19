@@ -35,6 +35,9 @@
     <string name="send_message">Send message</string>
     <string name="title_of_the_note">Note title</string>
     <string name="deadline_title">Deadline</string>
+    <string name="edit_meeting">Edit Meeting</string>
+    <string name="edit_birthday">Edit Birthday</string>
+    <string name="edit_note">Edit Note</string>
     <string name="add_text_note">Add note</string>
     <string name="time_pattern">08:00</string>
 </resources>

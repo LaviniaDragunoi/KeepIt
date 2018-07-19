@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -25,6 +28,8 @@ import butterknife.ButterKnife;
 public class BirthdayFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected {
     @BindView(R.id.picker_birth_date)
     TextView birthDate;
+    private Date birthDateDate;
+
     //Empty constructor;
     public BirthdayFragment() {
     }
@@ -32,6 +37,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.birthday_edit_fragment, container, false);
         ButterKnife.bind(this, rootView);
+        setHasOptionsMenu(true);
         birthDate = rootView.findViewById(R.id.picker_birth_date);
         birthDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +61,40 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
 
     @Override
     public void onDateSelected(Date date, String dateString) {
-        birthDate.setText(date.toString());
+        birthDateDate = date;
+        birthDate.setText(dateString);
+    }
+
+
+    //Inflating the menu bar
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.edit_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    //Creating Intents for each menu item.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                //delete items from meetings list
+                return true;
+            case R.id.action_save:
+                saveBirthday();
+                return true;
+            case R.id.action_share:
+                //share meeting
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void saveBirthday() {
+
+
+
     }
 }

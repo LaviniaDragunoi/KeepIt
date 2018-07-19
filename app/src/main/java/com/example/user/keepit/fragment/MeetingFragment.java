@@ -1,5 +1,6 @@
 package com.example.user.keepit.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import com.example.user.keepit.R;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventsEntity;
 import com.example.user.keepit.database.MeetingsEntity;
+import com.example.user.keepit.viewModels.EditMeetingViewModel;
 
 import java.util.Date;
 
@@ -40,6 +42,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private final static int DEFAULT_MEETING_ID = -1;
     private int mMeetingId = DEFAULT_MEETING_ID;
     private AppRoomDatabase roomDb;
+    private EditMeetingViewModel mViewModel;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -65,6 +68,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             }
         });
 
+        mViewModel = ViewModelProviders.of(getActivity()).get(EditMeetingViewModel.class);
         return rootView;
     }
 
@@ -124,10 +128,10 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     }
 
     private void saveMeeting() {
-        String title = meetingTitleEditText.getText().toString();
-        String personName = meetingPersonEditText.getText().toString();
-        String locationString = meetingLocationEditText.getText().toString();
-
-
+        mViewModel.meetingTitle = meetingTitleEditText.getText().toString();
+        mViewModel.meetingPersonName = meetingPersonEditText.getText().toString();
+        mViewModel.location = meetingLocationEditText.getText().toString();
+        mViewModel.date = meetingDateDate;
+        mViewModel.time = meetingTimeString;
     }
 }
