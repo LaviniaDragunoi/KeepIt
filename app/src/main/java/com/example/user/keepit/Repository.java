@@ -33,14 +33,6 @@ public class Repository {
         return sInstance;
     }
 
-    //Clean up the database
-    private void deleteFromDb() {
-        mEventDao.deleteAll();
-    }
-
-    public void addEvent(EventEntity eventEntity){
-        mEventDao.insertEvent(eventEntity);
-    }
 
     public LiveData<List<EventEntity>> initializeEventsList(){
         final MediatorLiveData<List<EventEntity>> mainEventsList = new MediatorLiveData<>();
@@ -52,11 +44,11 @@ public class Repository {
         });
         eventsDb.observeForever(eventEntities -> {
             if(eventEntities != null && eventEntities.size() >0){
-                mAppExecutors.networkIO().execute(()->{
-
-                    for(int i = 0; i< eventEntities.size(); i++){
-                        addEvent(eventEntities.get(i));
-                    }
+                mAppExecutors.diskIO().execute(()->{
+//                    deleteFromDb();
+//                    for(int i = 0; i< eventEntities.size(); i++){
+//                        addEvent(eventEntities.get(i));
+//                    }
                 });
             }else {
                 mainEventsList.setValue(null);
@@ -64,11 +56,20 @@ public class Repository {
         });
         return mainEventsList;
     }
-    private void addToDatabaseNewEntry() {
+    private void addToDatabase() {
         mEventDao.loadAllEvents();
     }
 
-    public void delete(){
+
+    //Clean up the database
+    private void deleteFromDb() {
         mEventDao.deleteAll();
+    }
+
+    public void addEvent(EventEntity eventEntity){
+        mAppExecutors.diskIO().execute(()->{
+            mEventDao.insertEvent(eventEntity);
+
+        });
     }
 }
