@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal">
     <TextView
-        android:id="@+id/checked_note"
+        android:id="@+id/checked_TV"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
@@ -21,22 +21,34 @@
         android:layout_gravity="center_vertical"
         android:layout_margin="@dimen/margin">
         <TextView
-            android:id="@+id/note_title"
+            android:id="@+id/event_type_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Event type"
+            android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/title_TV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Name"
             android:textSize="16sp"/>
         <TextView
-            android:id="@+id/deadline_date"
+            android:id="@+id/date_TV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Deadline Date"
+            tools:text="Date"
             android:textSize="16sp"/>
 
+        <TextView
+            android:id="@+id/person_name_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="PersonName"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/edit_note"
+        android:id="@+id/edit_event"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_margin="@dimen/margin"

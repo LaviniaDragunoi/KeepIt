@@ -22,9 +22,7 @@ import static com.example.user.keepit.activities.AddTodayActivity.NOTE_ID;
 public class EditActivity extends AppCompatActivity {
 
     private static final int DEFAULT_MEETING_ID = -1;
-    private int meetingId;
-    private int birthdayId;
-    private int noteId;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +33,8 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             if (intent.hasExtra(MEETING_ID)) {
-                meetingId = intent.getIntExtra(MEETING_ID, DEFAULT_ID);
-                if (meetingId == DEFAULT_ID) {
+                id = intent.getIntExtra(MEETING_ID, DEFAULT_ID);
+                if (id == DEFAULT_ID) {
                     setTitle(R.string.add_meeting);
                     MeetingFragment addMeetingFragment = new MeetingFragment();
                     fragmentManager.beginTransaction()
@@ -45,10 +43,11 @@ public class EditActivity extends AppCompatActivity {
                 } else {
                     setTitle(R.string.edit_meeting);
 
+                    //sa deschid fragmentul specific evenimentui( cu toate datele specifice) care urmeaza sa fie modificat
                 }
             } else if (intent.hasExtra(BIRTHDAY_ID)) {
-                birthdayId = intent.getIntExtra(BIRTHDAY_ID, DEFAULT_ID);
-                if (birthdayId == DEFAULT_ID) {
+                id = intent.getIntExtra(BIRTHDAY_ID, DEFAULT_ID);
+                if (id == DEFAULT_ID) {
                     setTitle(R.string.add_birthday);
                     BirthdayFragment addBirthdayFragment = new BirthdayFragment();
                     fragmentManager.beginTransaction()
@@ -59,8 +58,8 @@ public class EditActivity extends AppCompatActivity {
 
                 }
             } else if (intent.hasExtra(NOTE_ID)) {
-                noteId = intent.getIntExtra(NOTE_ID, DEFAULT_ID);
-                if (noteId == DEFAULT_ID) {
+                id = intent.getIntExtra(NOTE_ID, DEFAULT_ID);
+                if (id == DEFAULT_ID) {
                     setTitle(R.string.add_note);
                     NoteFragment addNoteFragment = new NoteFragment();
                     fragmentManager.beginTransaction()

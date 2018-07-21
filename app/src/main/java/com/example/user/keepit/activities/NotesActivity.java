@@ -11,15 +11,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
-import com.example.user.keepit.adapters.ListsAdapter;
+import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.BirthdayEntity;
-import com.example.user.keepit.database.NoteEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,27 +53,10 @@ public class NotesActivity extends AppCompatActivity {
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         AppExecutors executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
-        mRepository.getNotesLiveDataList().observe(this, notesList ->{
-            if(notesList != null && notesList.size() > 0){
-                List<Object> objectList =  convertNoteListToObjectList(notesList);
-                notesRecyclerView.setAdapter(new ListsAdapter(this, objectList));
-            }else {
 
-                emptyNotesListTV.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
-    /**
-     * Method that will convert the meetings list into an object list that will be used to bind
-     * data into ListsAdapter that is a multi objects(meetings, birthday, note) used adapter
-     *
-     * @param noteEntityList the list to be converted
-     * @return the object list, the result of conversion
-     */
-    public List<Object> convertNoteListToObjectList(List<NoteEntity> noteEntityList) {
-        return new ArrayList<>(noteEntityList);
-    }
+
     //Inflating the menu bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

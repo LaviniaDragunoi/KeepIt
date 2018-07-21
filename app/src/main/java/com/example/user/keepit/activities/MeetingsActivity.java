@@ -1,6 +1,5 @@
 package com.example.user.keepit.activities;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,21 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
-import com.example.user.keepit.adapters.ListsAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.MeetingsEntity;
-import com.example.user.keepit.viewModels.EditMeetingViewModel;
-import com.example.user.keepit.viewModels.EditViewModelFactory;
+import com.example.user.keepit.viewModels.EditEventViewModel;
+import com.example.user.keepit.viewModels.EditEventModelFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -40,10 +33,9 @@ public class MeetingsActivity extends AppCompatActivity {
 @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
     private int meetingId = DEFAULT_ID;
-    private List<MeetingsEntity> meetingsList;
-    private EditMeetingViewModel mViewModel;
+    private EditEventViewModel mViewModel;
     private Repository mRepository;
-    private EditViewModelFactory viewModelFactory;
+    private EditEventModelFactory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,28 +55,9 @@ public class MeetingsActivity extends AppCompatActivity {
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         AppExecutors executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
-        mRepository.getMeetingsLiveDataList().observe(this, meetingsList ->{
-            if(meetingsList != null && meetingsList.size() > 0){
-                List<Object> objectList =  convertMeetingListToObjectList(meetingsList);
-                meetingsRecyclerView.setAdapter(new ListsAdapter(this, objectList));
-            }else {
-                Toast.makeText(getApplicationContext(), "Nu ai lista pt display", Toast.LENGTH_LONG).show();
-                emptyMeetingListTV.setVisibility(View.VISIBLE);
-            }
-        });
 
     }
 
-    /**
-     * Method that will convert the meetings list into an object list that will be used to bind
-     * data into ListsAdapter that is a multi objects(meetings, birthday, note) used adapter
-     *
-     * @param meetingsEntityList the list to be converted
-     * @return the object list, the result of conversion
-     */
-    public List<Object> convertMeetingListToObjectList(List<MeetingsEntity> meetingsEntityList) {
-        return new ArrayList<>(meetingsEntityList);
-    }
 
     //Inflating the menu bar
     @Override

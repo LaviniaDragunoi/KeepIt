@@ -5,17 +5,17 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.user.keepit.Repository;
 
-public class EditViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+public class EditEventModelFactory extends ViewModelProvider.NewInstanceFactory {
     private Repository mRepository;
-    private int mDayId;
 
-    public EditViewModelFactory(Repository repository, int dayId){
+
+    public EditEventModelFactory(Repository repository){
         mRepository = repository;
-        mDayId = dayId;
+
     }
     @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
-            return (T) new EditMeetingViewModel(mRepository, mDayId);
+            return (T) new EditEventViewModel(mRepository);
         }
 
 }

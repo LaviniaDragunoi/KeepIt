@@ -16,17 +16,13 @@ import android.widget.Toast;
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
-import com.example.user.keepit.adapters.ListsAdapter;
+import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.BirthdayEntity;
-import com.example.user.keepit.database.MeetingsEntity;
-import com.example.user.keepit.fragment.BirthdayFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import static com.example.user.keepit.activities.AddTodayActivity.BIRTHDAY_ID;
@@ -57,27 +53,10 @@ private Repository mRepository;
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         AppExecutors executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
-        mRepository.getBirthdaysLiveDataList().observe(this, birthdayList ->{
-            if(birthdayList != null && birthdayList.size() > 0){
-                List<Object> objectList =  convertBirthdayListToObjectList(birthdayList);
-               birthdaysRecyclerView.setAdapter(new ListsAdapter(this, objectList));
-            }else {
-                Toast.makeText(getApplicationContext(), "Nu ai lista pt display", Toast.LENGTH_LONG).show();
-                emptyBirthdayListTV.setVisibility(View.VISIBLE);
-            }
-        });
+
     }
 
-    /**
-     * Method that will convert the meetings list into an object list that will be used to bind
-     * data into ListsAdapter that is a multi objects(meetings, birthday, note) used adapter
-     *
-     * @param birthdayEntityList the list to be converted
-     * @return the object list, the result of conversion
-     */
-    public List<Object> convertBirthdayListToObjectList(List<BirthdayEntity> birthdayEntityList) {
-        return new ArrayList<>(birthdayEntityList);
-    }
+
     //Inflating the menu bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

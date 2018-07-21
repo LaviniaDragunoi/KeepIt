@@ -1,5 +1,7 @@
 package com.example.user.keepit.fragment;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,11 +19,14 @@ import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventsEntity;
-import com.example.user.keepit.database.MeetingsEntity;
-import com.example.user.keepit.viewModels.EditMeetingViewModel;
+import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.viewModels.EditEventViewModel;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,12 +44,23 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     @BindView(R.id.meeting_location)
     EditText meetingLocationEditText;
     private Date meetingDateDate;
+    private String meetingDateString;
     private String meetingTimeString;
     private final static int DEFAULT_MEETING_ID = -1;
     private int mMeetingId = DEFAULT_MEETING_ID;
     private AppRoomDatabase roomDb;
-    private EditMeetingViewModel mViewModel;
+    private EditEventViewModel mViewModel;
     private Repository mRepository;
+    private static final String EVENT_TYPE = "meeting";
+    private List<EventEntity>  meetingList = new ArrayList<>();
+    public String eventType;
+    public String title;
+    public Date date;
+    public String dateString;
+    public String time;
+    public String personName;
+    public String location;
+    public String note;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -53,7 +69,12 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         View rootView = inflater.inflate(R.layout.meeting_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
-        roomDb = AppRoomDatabase.getsInstance(getContext());
+        AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(getContext());
+        AppExecutors executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+        EditEventModelFactory mViewModelFactory = new EditEventModelFactory(mRepository);
+        mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity()),
+                mViewModelFactory).get(EditEventViewModel.class);
         meetingDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +91,6 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             }
         });
 
-//        mViewModel = ViewModelProviders.of(getActivity()).get(EditMeetingViewModel.class);
         return rootView;
     }
 
@@ -94,6 +114,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     @Override
     public void onDateSelected(Date date, String dateString) {
         meetingDateDate = date;
+        meetingDateString = dateString;
         meetingDateTV.setText(dateString);
     }
 
@@ -130,15 +151,18 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     }
 
     private void saveMeeting() {
-        mViewModel.meetingTitle = meetingTitleEditText.getText().toString();
-        mViewModel.meetingPersonName = meetingPersonEditText.getText().toString();
-        mViewModel.location = meetingLocationEditText.getText().toString();
-        mViewModel.date = meetingDateDate;
-        mViewModel.time = meetingTimeString;
-        mViewModel.dayId = mRepository.getEventId(mViewModel.date);
-        MeetingsEntity meetingsEntity = new MeetingsEntity(mViewModel.dayId, mViewModel.date, mViewModel.meetingTitle,
-                mViewModel.meetingPersonName, mViewModel.time, mViewModel.location);
-        mViewModel.setMeetingEntity(meetingsEntity);
+
+        eventType = EVENT_TYPE;
+        title = meetingTitleEditText.getText().toString();
+        date = meetingDateDate;
+        dateString = meetingDateString;
+        time = meetingTimeString;
+        personName = meetingPersonEditText.getText().toString();
+        location = meetingLocationEditText.getText().toString();
+        note = "";
+        EventEntity meeting = new EventEntity(eventType, title, date, dateString, time, personName,
+                location, note);
+        mViewModel.addMeeting(meeting);
     }
     private void deleteMeeting() {
 
