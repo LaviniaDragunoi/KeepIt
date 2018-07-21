@@ -52,15 +52,6 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private EditEventViewModel mViewModel;
     private Repository mRepository;
     private static final String EVENT_TYPE = "meeting";
-    private List<EventEntity>  meetingList = new ArrayList<>();
-    public String eventType;
-    public String title;
-    public Date date;
-    public String dateString;
-    public String time;
-    public String personName;
-    public String location;
-    public String note;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -152,16 +143,16 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
 
     private void saveMeeting() {
 
-        eventType = EVENT_TYPE;
-        title = meetingTitleEditText.getText().toString();
-        date = meetingDateDate;
-        dateString = meetingDateString;
-        time = meetingTimeString;
-        personName = meetingPersonEditText.getText().toString();
-        location = meetingLocationEditText.getText().toString();
-        note = "";
-        EventEntity meeting = new EventEntity(eventType, title, date, dateString, time, personName,
-                location, note);
+        mViewModel.eventType = EVENT_TYPE;
+        mViewModel.title = meetingTitleEditText.getText().toString();
+        mViewModel.date = meetingDateDate;
+        mViewModel.dateString = meetingDateString;
+        mViewModel.time = meetingTimeString;
+        mViewModel.personName = meetingPersonEditText.getText().toString();
+        mViewModel.location = meetingLocationEditText.getText().toString();
+        mViewModel.note = "";
+        EventEntity meeting = new EventEntity(mViewModel.eventType, mViewModel.title, mViewModel.date,
+                mViewModel.dateString, mViewModel.time, mViewModel.personName, mViewModel.location, mViewModel.note);
         mViewModel.addMeeting(meeting);
     }
     private void deleteMeeting() {

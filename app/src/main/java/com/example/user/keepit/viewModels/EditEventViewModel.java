@@ -11,14 +11,20 @@ import java.util.List;
 
 public class EditEventViewModel extends ViewModel{
 
-
+    public String eventType;
+    public String title;
+    public Date date;
+    public String dateString;
+    public String time;
+    public String personName;
+    public String location;
+    public String note;
 
     private Repository mRepository;
 
 
 
     public EditEventViewModel(Repository repository){
-
         mRepository = repository;
     }
 

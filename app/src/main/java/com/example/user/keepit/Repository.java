@@ -54,6 +54,9 @@ public class Repository {
             if(eventEntities != null && eventEntities.size() >0){
                 mAppExecutors.networkIO().execute(()->{
 
+                    for(int i = 0; i< eventEntities.size(); i++){
+                        addEvent(eventEntities.get(i));
+                    }
                 });
             }else {
                 mainEventsList.setValue(null);
