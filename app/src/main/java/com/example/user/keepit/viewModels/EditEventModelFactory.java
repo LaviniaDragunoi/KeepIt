@@ -7,15 +7,16 @@ import com.example.user.keepit.Repository;
 
 public class EditEventModelFactory extends ViewModelProvider.NewInstanceFactory {
     private Repository mRepository;
+    private final int mEventId;
 
 
-    public EditEventModelFactory(Repository repository){
-        mRepository = repository;
-
+    public EditEventModelFactory(Repository repository, int eventId){
+       mRepository = repository;
+        mEventId = eventId;
     }
     @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
-            return (T) new EditEventViewModel(mRepository);
+            return (T) new EditEventViewModel(mRepository, mEventId);
         }
 
 }

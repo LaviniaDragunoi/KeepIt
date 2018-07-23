@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -27,12 +28,17 @@ public abstract class EventDao {
     @Query("SELECT * FROM events")
     public abstract LiveData<List<EventEntity>> loadAllEvents();
 
-    @Query("SELECT * FROM events WHERE eventType = :meeting")
-    public abstract List<EventEntity> getMeetings(String meeting);
+    @Query("SELECT * FROM events WHERE eventType = :eventType")
+    public abstract LiveData<List<EventEntity>> getEventsByEventType(String eventType);
 
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     public abstract void updateEvent(EventEntity event);
 
+    @Query("SELECT * FROM events WHERE id = :eventId")
+    public abstract LiveData<EventEntity> loadEventById(int eventId);
+
+    @Query("SELECT * FROM events WHERE dateString = :date")
+    public abstract LiveData<List<EventEntity>> getEventsByDate(String date);
 }
 

@@ -29,7 +29,9 @@ import static java.lang.String.valueOf;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     private static final String LOG_TAG = ListAdapter.class.getSimpleName();
-    private static final String EXTRA_EVENT = "currentEvent";
+    public static final String EXTRA_EVENT = "currentEvent";
+    public static final String EXTRA_EVENT_ID = "eventId";
+    public static final String EVENT_TYPE = "eventType";
     private List<EventEntity> eventsList;
     private Context mContext;
 
@@ -82,7 +84,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             @Override
             public void onClick(View v) {
                 if(checkedTextView.isShown()){
-                    checkedTextView.setVisibility(View.GONE);
+                    checkedTextView.setVisibility(View.INVISIBLE);
                 }else checkedTextView.setVisibility(View.VISIBLE);
             }
         });
@@ -115,26 +117,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         }
     }
 
-    void setEvent(List<EventEntity> events){
+    public void setEvent(List<EventEntity> events){
         eventsList = events;
         notifyDataSetChanged();
     }
 
-    /*private String dateToString(Date date){
 
-        String dateFormatted = "";
-        String newDate = date.toString().substring(0,10);
-
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat newFormat = new SimpleDateFormat("dd/mm/yyyy");
-        try {
-            Date dt = inputFormat.parse(newDate);
-            dateFormatted = newFormat.format(dt);
-        } catch (ParseException pe) {
-
-            Log.e(LOG_TAG, mContext.getString(R.string.exception_date_format), pe);
-        }
-
-        return dateFormatted;
-    }*/
 }

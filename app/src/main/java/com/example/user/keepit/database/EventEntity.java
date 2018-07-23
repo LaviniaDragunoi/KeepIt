@@ -24,7 +24,7 @@ public class EventEntity implements Parcelable{
     private String location;
     private String note;
 
-    @Ignore
+
     public EventEntity(int id, String eventType, String title, Date date, String dateString, String time, String personName,
                        String location, String note){
         this.id = id;
@@ -37,7 +37,7 @@ public class EventEntity implements Parcelable{
         this.location = location;
         this.note = note;
     }
-
+    @Ignore
     public EventEntity(String eventType, String title, Date date, String dateString, String time, String personName,
                        String location, String note){
         this.id = id;

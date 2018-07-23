@@ -20,6 +20,5 @@
         android:layout_gravity="center"
         android:text="@string/empty_list"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="20sp"
-        android:visibility="gone" />
+        android:textSize="20sp" />
 </FrameLayout>

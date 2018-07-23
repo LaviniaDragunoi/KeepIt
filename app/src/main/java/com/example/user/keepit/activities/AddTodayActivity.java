@@ -13,24 +13,21 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.provider.CalendarContract.Instances.EVENT_ID;
+import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+
 public class AddTodayActivity extends AppCompatActivity {
 
     @BindView(R.id.meeting_button)
     Button addMeetingButton;
-    public static final String MEETING_ID = "meetingId";
     public final static int DEFAULT_ID = -1;
-    private int meetingId = DEFAULT_ID;
-
-@BindView(R.id.birthday_button)
-Button addBirthdayButton;
-    public static final String BIRTHDAY_ID = "birthdayId";
-    private int birthdayId = DEFAULT_ID;
-
+    @BindView(R.id.birthday_button)
+    Button addBirthdayButton;
     @BindView(R.id.note_button)
     Button addNoteButton;
-    public static final String NOTE_ID = "noteId";
-    private int noteId = DEFAULT_ID;
-
+    public static final String IS_MEETING = "Meeting";
+    public static final String IS_BIRTHDAY = "Birthday";
+    public static final String IS_NOTE = "Note";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +41,7 @@ Button addBirthdayButton;
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(MEETING_ID, DEFAULT_ID);
+                intent.putExtra(IS_MEETING, true);
                 startActivity(intent);
             }
         });
@@ -52,7 +49,7 @@ Button addBirthdayButton;
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(BIRTHDAY_ID, DEFAULT_ID);
+                intent.putExtra(IS_BIRTHDAY, true);
                 startActivity(intent);
             }
         });
@@ -60,7 +57,7 @@ Button addBirthdayButton;
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
-                intent.putExtra(NOTE_ID, DEFAULT_ID);
+                intent.putExtra(IS_NOTE, true);
                 startActivity(intent);
             }
         });

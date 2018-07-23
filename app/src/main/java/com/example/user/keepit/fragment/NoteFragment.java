@@ -30,6 +30,16 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     @BindView(R.id.picker_note_deadline)
     TextView noteDeadline;
     private Date noteDeadlineDate;
+    private String noteDeadlineString;
+    public static final String NOTE_TYPE = "Note";
+    private String eventType;
+    private String title;
+    private Date date;
+    private String dateString;
+    private String time;
+    private String personName;
+    private String location;
+    private String note;
 
     //Empty constructor;
     public NoteFragment(){}
@@ -38,7 +48,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         View rootView = inflater.inflate(R.layout.note_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
-        noteDeadline = rootView.findViewById(R.id.picker_note_deadline);
         noteDeadline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +55,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
 
             }
         });
+
 
         return rootView;
     }
@@ -59,6 +69,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     @Override
     public void onDateSelected(Date date, String dateString) {
         noteDeadlineDate = date;
+        noteDeadlineString = dateString;
         noteDeadline.setText(dateString);
     }
 

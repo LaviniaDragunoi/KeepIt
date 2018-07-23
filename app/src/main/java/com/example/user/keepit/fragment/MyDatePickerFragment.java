@@ -29,7 +29,7 @@ public class MyDatePickerFragment extends DialogFragment {
             @SuppressLint("DefaultLocale")
             Date date = getDateFromDatePicker(view);
             @SuppressLint("DefaultLocale") String pickedDate = (String.format("%02d/%02d/%04d",
-                    view.getDayOfMonth(), view.getMonth(), view.getYear()));
+                    view.getDayOfMonth(), view.getMonth()+1, view.getYear()));
             listener.onDateSelected(date, pickedDate);
 
 
@@ -55,7 +55,7 @@ public class MyDatePickerFragment extends DialogFragment {
      */
     public static java.util.Date getDateFromDatePicker(DatePicker datePicker){
         int day = datePicker.getDayOfMonth();
-        int month = datePicker.getMonth();
+        int month = datePicker.getMonth() +1;
         int year =  datePicker.getYear();
 
         Calendar calendar = Calendar.getInstance();

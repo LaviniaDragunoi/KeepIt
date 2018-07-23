@@ -1,5 +1,6 @@
 package com.example.user.keepit.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,29 +12,31 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
-import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.viewModels.EditEventViewModel;
+import com.example.user.keepit.viewModels.EventViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import static com.example.user.keepit.activities.AddTodayActivity.BIRTHDAY_ID;
 import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
+import static com.example.user.keepit.activities.AddTodayActivity.IS_BIRTHDAY;
+import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
 
 public class BirthdaysActivity extends AppCompatActivity {
-@BindView(R.id.birthdays_recycler_view)
+    @BindView(R.id.birthdays_recycler_view)
     RecyclerView birthdaysRecyclerView;
-private Repository mRepository;
    @BindView(R.id.empty_birthday_list_textView)
    TextView emptyBirthdayListTV;
+    private EventViewModel mViewModel;
+    private AppRoomDatabase roomDB;
+    private AppExecutors executors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +53,16 @@ private Repository mRepository;
                 LinearLayoutManager(this);
         birthdaysRecyclerView.setLayoutManager(layoutManagerReviews);
         //Get the meetingList to set the adapter for
-        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
-        AppExecutors executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
-
+        roomDB = AppRoomDatabase.getsInstance(this);
+        executors = AppExecutors.getInstance();
+        mViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
+//        mViewModel.getEventListByType(BIRTHDAY_TYPE).observe(this, eventEntityList -> {
+//            if(eventEntityList != null && eventEntityList.size() > 0){
+//                birthdaysRecyclerView.setAdapter(new ListAdapter(this, eventEntityList));
+//            }else {
+//                emptyBirthdayListTV.setVisibility(View.VISIBLE);
+//            }
+//        });
     }
 
 
@@ -75,7 +84,8 @@ private Repository mRepository;
                 return true;
             case R.id.action_add_from_birthdays:
                 Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(BIRTHDAY_ID, DEFAULT_ID);
+                intent.putExtra(IS_BIRTHDAY, true);
+                intent.putExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                 startActivity(intent);
                 return true;
             case R.id.action_home_b:

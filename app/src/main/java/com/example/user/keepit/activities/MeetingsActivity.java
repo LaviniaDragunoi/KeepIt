@@ -1,6 +1,10 @@
 package com.example.user.keepit.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -9,22 +13,30 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
+import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.viewModels.EventViewModel;
+import com.example.user.keepit.viewModels.EventViewModelFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.AddTodayActivity.MEETING_ID;
+import static com.example.user.keepit.activities.AddTodayActivity.IS_MEETING;
+import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
 
 
 public class MeetingsActivity extends AppCompatActivity {
@@ -33,9 +45,12 @@ public class MeetingsActivity extends AppCompatActivity {
 @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
     private int meetingId = DEFAULT_ID;
-    private EditEventViewModel mViewModel;
+    private EventViewModel mViewModel;
+    private AppRoomDatabase roomDB;
+    private AppExecutors executors;
+    private ListAdapter adapter;
+    private EventViewModelFactory factoryVM;
     private Repository mRepository;
-    private EditEventModelFactory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +67,24 @@ public class MeetingsActivity extends AppCompatActivity {
                 LinearLayoutManager(this);
         meetingsRecyclerView.setLayoutManager(layoutManagerReviews);
         //Get the meetingList to set the adapter for
-        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
-        AppExecutors executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        roomDB = AppRoomDatabase.getsInstance(this);
+        executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors,roomDB, roomDB.eventDao());
+        factoryVM = new EventViewModelFactory(mRepository);
+        mViewModel = ViewModelProviders.of(this,factoryVM).get(EventViewModel.class);
+        mViewModel.getMeetingsList().observe(this, new Observer<List<EventEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<EventEntity> eventEntityList) {
+               if(eventEntityList != null && eventEntityList.size() > 0){
+                   meetingsRecyclerView.setAdapter(new ListAdapter(MeetingsActivity.this, eventEntityList));
+                   meetingsRecyclerView.setVisibility(View.VISIBLE);
+                   emptyMeetingListTV.setVisibility(View.INVISIBLE);
+               }else if(eventEntityList == null){
+                   meetingsRecyclerView.setVisibility(View.INVISIBLE);
+                   emptyMeetingListTV.setVisibility(View.VISIBLE);
+               }
+            }
+        });
 
     }
 
@@ -78,7 +108,8 @@ public class MeetingsActivity extends AppCompatActivity {
                 return true;
             case R.id.action_add_from_meetings:
                 Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(MEETING_ID, DEFAULT_ID);
+                intent.putExtra(IS_MEETING, true);
+                intent.putExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                 startActivity(intent);
                 return true;
             case R.id.action_home_m:
@@ -103,6 +134,6 @@ public class MeetingsActivity extends AppCompatActivity {
     }
 
     private void deleteAll() {
-        mRepository.delete();
+       
     }
 }

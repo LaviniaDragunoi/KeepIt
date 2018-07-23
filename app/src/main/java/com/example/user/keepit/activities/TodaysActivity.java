@@ -1,21 +1,37 @@
 package com.example.user.keepit.activities;
 
+import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.activities.AddTodayActivity;
 import com.example.user.keepit.activities.BirthdaysActivity;
 import com.example.user.keepit.activities.MainActivity;
 import com.example.user.keepit.activities.MeetingsActivity;
 import com.example.user.keepit.activities.NotesActivity;
+import com.example.user.keepit.adapters.ListAdapter;
+import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.viewModels.EventViewModel;
+import com.example.user.keepit.viewModels.EventViewModelFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -25,6 +41,16 @@ public class TodaysActivity extends AppCompatActivity {
 
     @BindView(R.id.todays_recycler_view)
     RecyclerView todaysRecylerView;
+    @BindView(R.id.todays_date_text_view)
+    TextView todayDate;
+    private AppRoomDatabase roomDB;
+    private AppExecutors executors;
+    private EventViewModelFactory factoryVM;
+    private Repository repository;
+    private EventViewModel eventVM;
+    @BindView(R.id.empty_today_list_textView)
+    TextView emptyTextViewToday;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +62,32 @@ public class TodaysActivity extends AppCompatActivity {
          DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
          itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
          todaysRecylerView.addItemDecoration(itemDecoration);
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        String todayDateString = formatter.format(date);
+        todayDate.setText(todayDateString);
+
+        roomDB = AppRoomDatabase.getsInstance(this);
+        executors = AppExecutors.getInstance();
+        repository = Repository.getsInstance(executors,roomDB,roomDB.eventDao());
+        factoryVM = new EventViewModelFactory(repository);
+        eventVM = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
+        eventVM.getEventsOfToday(todayDateString).observe(this, eventEntityList -> {
+            if(eventEntityList != null && eventEntityList.size() > 0 ){
+
+                RecyclerView.LayoutManager layoutManagerReviews = new
+                        LinearLayoutManager(this);
+                todaysRecylerView.setLayoutManager(layoutManagerReviews);
+                todaysRecylerView.setAdapter(new ListAdapter(this, eventEntityList));
+                emptyTextViewToday.setVisibility(View.INVISIBLE);
+            }else if(eventEntityList == null){
+                todaysRecylerView.setVisibility(View.INVISIBLE);
+                emptyTextViewToday.setVisibility(View.VISIBLE);
+            }
+
+        });
+
 
 
 
