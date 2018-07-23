@@ -37,38 +37,41 @@ public class EditActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         if (intent != null) {
-            currentEvent = intent.getParcelableExtra(EXTRA_EVENT);
-             id = currentEvent.getId();
-            if (id == DEFAULT_ID) {
-                if (intent.hasExtra(IS_MEETING)) {
-                    setTitle(R.string.add_meeting);
-                    MeetingFragment addMeetingFragment = new MeetingFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(EVENT_ENTITY_ID, id);
-                    addMeetingFragment.setArguments(bundle);
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.add_meeting_container, addMeetingFragment)
-                            .commit();
-                } else if (intent.hasExtra(IS_BIRTHDAY)) {
-                    setTitle(R.string.add_birthday);
-                    BirthdayFragment addBirthdayFragment = new BirthdayFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(EVENT_ENTITY_ID, id);
-                    addBirthdayFragment.setArguments(bundle);
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.add_birthday_container, addBirthdayFragment)
-                            .commit();
-                } else if (intent.hasExtra(IS_NOTE)) {
-                    setTitle(R.string.add_note);
-                    NoteFragment addNoteFragment = new NoteFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(EVENT_ENTITY_ID, id);
-                    addNoteFragment.setArguments(bundle);
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.add_note_container, addNoteFragment)
-                            .commit();
-                }
-            } else {String eventType = currentEvent.getEventType();
+            if (intent.hasExtra(EVENT_ENTITY_ID)) {
+                id = intent.getIntExtra(EVENT_ENTITY_ID, DEFAULT_ID);
+                if (id == DEFAULT_ID) {
+                    if (intent.hasExtra(IS_MEETING)) {
+                        setTitle(R.string.add_meeting);
+                        MeetingFragment addMeetingFragment = new MeetingFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(EVENT_ENTITY_ID, id);
+                        addMeetingFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.add_meeting_container, addMeetingFragment)
+                                .commit();
+                    } else if (intent.hasExtra(IS_BIRTHDAY)) {
+                        setTitle(R.string.add_birthday);
+                        BirthdayFragment addBirthdayFragment = new BirthdayFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(EVENT_ENTITY_ID, id);
+                        addBirthdayFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.add_birthday_container, addBirthdayFragment)
+                                .commit();
+                    } else if (intent.hasExtra(IS_NOTE)) {
+                        setTitle(R.string.add_note);
+                        NoteFragment addNoteFragment = new NoteFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(EVENT_ENTITY_ID, id);
+                        addNoteFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.add_note_container, addNoteFragment)
+                                .commit();
+                    }
+                } else if (intent.hasExtra(EXTRA_EVENT)) {
+                currentEvent = intent.getParcelableExtra(EXTRA_EVENT);
+                String eventType = currentEvent.getEventType();
+              //  id = currentEvent.getId();
                 switch (eventType) {
                     case MEETING_TYPE: {
                         setTitle(R.string.edit_meeting);
@@ -87,6 +90,7 @@ public class EditActivity extends AppCompatActivity {
                         BirthdayFragment addBirthdayFragment = new BirthdayFragment();
                         Bundle bundle = new Bundle();
                         bundle.putInt(EVENT_ENTITY_ID, id);
+                        bundle.putParcelable(EXTRA_EVENT, currentEvent);
                         addBirthdayFragment.setArguments(bundle);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.add_birthday_container, addBirthdayFragment)
@@ -98,6 +102,7 @@ public class EditActivity extends AppCompatActivity {
                         NoteFragment addNoteFragment = new NoteFragment();
                         Bundle bundle = new Bundle();
                         bundle.putInt(EVENT_ENTITY_ID, id);
+                        bundle.putParcelable(EXTRA_EVENT, currentEvent);
                         addNoteFragment.setArguments(bundle);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.add_note_container, addNoteFragment)
@@ -105,8 +110,8 @@ public class EditActivity extends AppCompatActivity {
                         break;
                     }
                 }
-        }
+                }
+            }
         }
     }
-
 }

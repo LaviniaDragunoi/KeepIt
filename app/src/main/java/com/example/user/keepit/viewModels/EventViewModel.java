@@ -35,4 +35,12 @@ public class EventViewModel extends ViewModel{
 
         return mRepository.getTodaysEvents(today);
     }
+
+    public LiveData<List<EventEntity>> getBirthdaysList() {
+        return mRepository.getBirthdays();
+    }
+
+    public LiveData<List<EventEntity>> getNotesList() {
+        return mRepository.getNotes();
+    }
 }

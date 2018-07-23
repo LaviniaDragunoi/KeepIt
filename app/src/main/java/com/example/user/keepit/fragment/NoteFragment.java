@@ -3,8 +3,11 @@ package com.example.user.keepit.fragment;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,9 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
+import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.viewModels.EditEventViewModel;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,13 +35,31 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
+import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
+
 public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected{
 
     @BindView(R.id.picker_note_deadline)
-    TextView noteDeadline;
+    TextView noteDeadlineTextView;
+    @BindView(R.id.note_name_title)
+    EditText noteTitleEditText;
+    @BindView(R.id.note_text)
+    EditText noteTextEditText;
     private Date noteDeadlineDate;
     private String noteDeadlineString;
+
     public static final String NOTE_TYPE = "Note";
+
+    private AppRoomDatabase roomDb;
+    private EditEventViewModel mViewModel;
+    private AppExecutors executors;
+    private int eventId;
+    private Repository mRepository;
+    private EditEventModelFactory factory;
+    private EventEntity currentEvent;
+
     private String eventType;
     private String title;
     private Date date;
@@ -48,16 +76,55 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         View rootView = inflater.inflate(R.layout.note_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
-        noteDeadline.setOnClickListener(new View.OnClickListener() {
+
+        roomDb = AppRoomDatabase.getsInstance(getContext());
+        executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
+
+        Bundle bundle = getArguments();
+        if(bundle != null) {
+            if (bundle.containsKey(EXTRA_EVENT)) {
+                currentEvent = bundle.getParcelable(EXTRA_EVENT);
+                eventId = currentEvent.getId();
+                populateUI(currentEvent);
+
+            }else {
+                eventId = bundle.getInt(EVENT_ENTITY_ID);
+
+            }
+
+        }
+
+        factory = new EditEventModelFactory(mRepository, eventId);
+        mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
+        mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
+            @Override
+            public void onChanged(@Nullable EventEntity eventEntity) {
+                mViewModel.getEvent().removeObserver(this);
+
+            }
+        });
+        showPickerSelected();
+
+        return rootView;
+    }
+
+    private void showPickerSelected() {
+        noteDeadlineTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePicker(v);
 
             }
         });
+    }
 
-
-        return rootView;
+    private void populateUI(EventEntity currentEvent) {
+        noteTitleEditText.setText(currentEvent.getTitle());
+        noteDeadlineTextView.setText(currentEvent.getDateString());
+        noteDeadlineDate = currentEvent.getDate();
+        noteDeadlineString = currentEvent.getDateString();
+        noteTextEditText.setText(currentEvent.getNote());
     }
 
     public void showDatePicker(View v) {
@@ -70,7 +137,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     public void onDateSelected(Date date, String dateString) {
         noteDeadlineDate = date;
         noteDeadlineString = dateString;
-        noteDeadline.setText(dateString);
+        noteDeadlineTextView.setText(dateString);
     }
 
 
@@ -101,6 +168,31 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     }
 
     private void saveNote() {
+        eventType = NOTE_TYPE;
+        title = noteTitleEditText.getText().toString();
+        date = noteDeadlineDate;
+        dateString = noteDeadlineString;
+        time = "";
+        personName = "";
+        location = "";
+        note = noteTextEditText.getText().toString();
+
+        EventEntity noteEvent = new EventEntity(eventType, title, date, dateString, time,
+                personName, location, note);
+
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(eventId == DEFAULT_ID) {
+                    mViewModel.addEvent(noteEvent);
+
+                }else {
+                    noteEvent.setId(eventId);
+                    mViewModel.updateEvent(noteEvent);
+                }
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        });
 
     }
 }

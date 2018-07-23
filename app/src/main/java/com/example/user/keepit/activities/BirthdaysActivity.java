@@ -1,7 +1,9 @@
 package com.example.user.keepit.activities;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -15,12 +17,16 @@ import android.widget.TextView;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 import com.example.user.keepit.viewModels.EventViewModel;
+import com.example.user.keepit.viewModels.EventViewModelFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -37,6 +43,8 @@ public class BirthdaysActivity extends AppCompatActivity {
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
     private AppExecutors executors;
+    private EventViewModelFactory factoryVM;
+    private Repository mRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,7 @@ public class BirthdaysActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.birthday_name));
+
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
@@ -52,17 +61,26 @@ public class BirthdaysActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManagerReviews = new
                 LinearLayoutManager(this);
         birthdaysRecyclerView.setLayoutManager(layoutManagerReviews);
-        //Get the meetingList to set the adapter for
+
+        //Get the birthdayList to set the adapter for
         roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        mViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
-//        mViewModel.getEventListByType(BIRTHDAY_TYPE).observe(this, eventEntityList -> {
-//            if(eventEntityList != null && eventEntityList.size() > 0){
-//                birthdaysRecyclerView.setAdapter(new ListAdapter(this, eventEntityList));
-//            }else {
-//                emptyBirthdayListTV.setVisibility(View.VISIBLE);
-//            }
-//        });
+        mRepository = Repository.getsInstance(executors,roomDB, roomDB.eventDao());
+        factoryVM = new EventViewModelFactory(mRepository);
+        mViewModel = ViewModelProviders.of(this,factoryVM).get(EventViewModel.class);
+        mViewModel.getBirthdaysList().observe(this, new Observer<List<EventEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<EventEntity> eventEntityList) {
+                if(eventEntityList != null && eventEntityList.size() > 0){
+                    birthdaysRecyclerView.setAdapter(new ListAdapter(BirthdaysActivity.this, eventEntityList));
+                    birthdaysRecyclerView.setVisibility(View.VISIBLE);
+                    emptyBirthdayListTV.setVisibility(View.INVISIBLE);
+                }else if(eventEntityList == null){
+                    birthdaysRecyclerView.setVisibility(View.INVISIBLE);
+                    emptyBirthdayListTV.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
 

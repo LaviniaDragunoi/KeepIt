@@ -44,11 +44,9 @@ public class MeetingsActivity extends AppCompatActivity {
     RecyclerView meetingsRecyclerView;
 @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
-    private int meetingId = DEFAULT_ID;
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
     private AppExecutors executors;
-    private ListAdapter adapter;
     private EventViewModelFactory factoryVM;
     private Repository mRepository;
 
@@ -59,6 +57,7 @@ public class MeetingsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.meetings_name));
+
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
@@ -66,6 +65,7 @@ public class MeetingsActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManagerReviews = new
                 LinearLayoutManager(this);
         meetingsRecyclerView.setLayoutManager(layoutManagerReviews);
+
         //Get the meetingList to set the adapter for
         roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();

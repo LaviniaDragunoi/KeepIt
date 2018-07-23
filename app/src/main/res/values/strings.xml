@@ -23,6 +23,7 @@
     <string name="time_title">Time</string>
     <string name="add_time">Add time</string>
     <string name="person_title">Name</string>
+    <string name="empty_for_today">Today is only about you. \n Enjoy your free time!</string>
     <string name="add_person_name">Add her/his name</string>
     <string name="title_of_the_meeting">Meeting\'s name</string>
     <string name="add_title">Add title</string>

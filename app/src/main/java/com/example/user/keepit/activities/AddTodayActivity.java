@@ -41,6 +41,7 @@ public class AddTodayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
+                intent.putExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                 intent.putExtra(IS_MEETING, true);
                 startActivity(intent);
             }
@@ -50,6 +51,7 @@ public class AddTodayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
                 intent.putExtra(IS_BIRTHDAY, true);
+                intent.putExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                 startActivity(intent);
             }
         });
@@ -58,6 +60,7 @@ public class AddTodayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(AddTodayActivity.this, EditActivity.class);
                 intent.putExtra(IS_NOTE, true);
+                intent.putExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                 startActivity(intent);
             }
         });

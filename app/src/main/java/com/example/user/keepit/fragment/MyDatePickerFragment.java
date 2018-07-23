@@ -55,7 +55,7 @@ public class MyDatePickerFragment extends DialogFragment {
      */
     public static java.util.Date getDateFromDatePicker(DatePicker datePicker){
         int day = datePicker.getDayOfMonth();
-        int month = datePicker.getMonth() +1;
+        int month = datePicker.getMonth();
         int year =  datePicker.getYear();
 
         Calendar calendar = Calendar.getInstance();

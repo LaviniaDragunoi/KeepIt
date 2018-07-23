@@ -29,7 +29,8 @@
                 android:id="@+id/note_name_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_title" />
+                android:hint="@string/add_title"
+                android:textColor="@color/colorPrimaryDark"/>
 
         </LinearLayout>
         <LinearLayout
@@ -65,7 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/add_text_note"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                android:textColor="@color/colorPrimaryDark"/>
 
         </LinearLayout>
            </LinearLayout>

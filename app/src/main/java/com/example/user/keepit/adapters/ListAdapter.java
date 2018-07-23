@@ -24,6 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
 import static java.lang.String.valueOf;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
@@ -76,6 +77,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             public void onClick(View v) {
                 Intent intent = new Intent(holder.itemView.getContext(), EditActivity.class);
                 intent.putExtra(EXTRA_EVENT, eventEntity);
+                intent.putExtra(EVENT_ENTITY_ID, eventEntity.getId());
                 holder.itemView.getContext().startActivity(intent);
             }
         });

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 
 import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
 import static java.lang.String.valueOf;
 
 public class BirthdayFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected {
@@ -41,13 +43,15 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     TextView personAgeTextView;
     private Date birthDateDate;
     private String birthDateString;
+
     public static final String BIRTHDAY_TYPE = "Birthday";
-    private final static int DEFAULT_BIRTHDAY_ID = -1;
-    private int mBirthdayId = DEFAULT_BIRTHDAY_ID;
+
     private AppRoomDatabase roomDb;
     private EditEventViewModel mViewModel;
     private AppExecutors executors;
     private int eventId;
+    private Repository mRepository;
+
     private String eventType;
     private String title;
     private Date date;
@@ -56,6 +60,8 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     private String personName;
     private String location;
     private String note;
+    private EditEventModelFactory factory;
+    private EventEntity currentEvent;
 
     //Empty constructor;
     public BirthdayFragment() {
@@ -65,30 +71,45 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         View rootView = inflater.inflate(R.layout.birthday_edit_fragment, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
-        Bundle bundle = getArguments();
-        eventId = bundle.getInt(EVENT_ENTITY_ID);
+
         roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
-//        EditEventModelFactory mViewModelFactory = new EditEventModelFactory(roomDb,eventId);
-//        mViewModel = ViewModelProviders.of(this,mViewModelFactory).get(EditEventViewModel.class);
-//        mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
-//            @Override
-//            public void onChanged(@Nullable EventEntity eventEntity) {
-//                mViewModel.getEvent().removeObserver(this);
-//                populateUI(eventEntity);
-//            }
-//        });
+        mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
 
+        Bundle bundle = getArguments();
+        if(bundle != null) {
+            if (bundle.containsKey(EXTRA_EVENT)) {
+                currentEvent = bundle.getParcelable(EXTRA_EVENT);
+                eventId = currentEvent.getId();
+                populateUI(currentEvent);
+
+            }else {
+                eventId = bundle.getInt(EVENT_ENTITY_ID);
+
+            }
+            }
+
+        factory = new EditEventModelFactory(mRepository, eventId);
+        mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
+        mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
+            @Override
+            public void onChanged(@Nullable EventEntity eventEntity) {
+                mViewModel.getEvent().removeObserver(this);
+
+            }
+        });
+        showPickerSelected();
+        return rootView;
+    }
+
+    private void showPickerSelected() {
         birthDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePicker(v);
 
-
             }
         });
-
-        return rootView;
     }
 
     public void showDatePicker(View v) {
@@ -99,12 +120,12 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     }
 
     private void populateUI(EventEntity eventEntity) {
-        if(eventEntity == null){
-            return;
-        }
+
         birthDate.setText(eventEntity.getDateString());
+        birthDateDate = eventEntity.getDate();
+        birthDateString = eventEntity.getDateString();
         birthdayPersonNameEditText.setText(eventEntity.getPersonName());
-        personAgeTextView.setText(getAge(birthDateDate));
+        personAgeTextView.setText(valueOf(getAge(birthDateDate)));
 
     }
     @Override
@@ -134,7 +155,8 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_delete:
-                //delete items from meetings list
+                //delete items from birthdays list
+                deleteBirthday();
                 return true;
             case R.id.action_save:
                 saveBirthday();
@@ -147,27 +169,33 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         }
     }
 
-    private void saveBirthday() {
+    private void deleteBirthday() {
 
+    }
+
+    private void saveBirthday() {
         eventType = BIRTHDAY_TYPE;
-        title = "";
+        title = " ";
         date = birthDateDate;
         dateString = birthDateString;
-        time = "";
+        time = " ";
         personName = birthdayPersonNameEditText.getText().toString();
-        location = "";
-        note = "";
+        location = " ";
+        note = " ";
         EventEntity birthday = new EventEntity(eventType, title,date, dateString, time, personName,
                 location, note);
-        int id = birthday.getId();
-        if (id == DEFAULT_ID) {
-            // insert new event
-            mViewModel.addEvent(birthday);
-        } else {
-            //update event
-            birthday.setId(id);
-            mViewModel.updateEvent(birthday);
-        }
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(eventId == DEFAULT_ID) {
+                    mViewModel.addEvent(birthday);
 
+                }else {
+                    birthday.setId(eventId);
+                    mViewModel.updateEvent(birthday);
+                }
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        });
     }
 }

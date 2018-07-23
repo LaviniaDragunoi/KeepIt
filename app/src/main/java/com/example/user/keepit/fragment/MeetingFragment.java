@@ -49,14 +49,16 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private Date meetingDateDate;
     private String meetingDateString;
     private String meetingTimeString;
-    private final static int DEFAULT_MEETING_ID = -1;
-    private int mMeetingId = DEFAULT_MEETING_ID;
+
     private AppRoomDatabase roomDb;
     private EditEventViewModel mViewModel;
-    public static final String MEETING_TYPE = "Meeting";
     private AppExecutors executors;
     private int eventId;
     private Repository mRepository;
+    private EditEventModelFactory factory;
+    private EventEntity currentEvent;
+
+    public static final String MEETING_TYPE = "Meeting";
 
     private String eventType;
     private String title;
@@ -66,8 +68,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private String personName;
     private String location;
     private String note;
-    private EditEventModelFactory factory;
-    private EventEntity currentEvent;
+
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -76,6 +77,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         View rootView = inflater.inflate(R.layout.meeting_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
+
         roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
@@ -87,11 +89,13 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
                 eventId = currentEvent.getId();
                 populateUI(currentEvent);
 
-          }else if(bundle.containsKey(EVENT_ENTITY_ID)){
+            }else {
                 eventId = bundle.getInt(EVENT_ENTITY_ID);
 
             }
+
         }
+
         factory = new EditEventModelFactory(mRepository, eventId);
         mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
         mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
@@ -101,7 +105,6 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
 
             }
         });
-
        showPickerSelected();
 
         return rootView;
@@ -110,11 +113,13 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private void populateUI(EventEntity eventEntity) {
         meetingTitleEditText.setText(eventEntity.getTitle());
         meetingDateTV.setText(eventEntity.getDateString());
-        date = eventEntity.getDate();
-        dateString = eventEntity.getDateString();
-        meetingTimeTV.setText(eventEntity.getTime());
+        meetingDateDate = eventEntity.getDate();
+        meetingDateString = eventEntity.getDateString();
+        meetingTimeString = eventEntity.getTime();
+        meetingTimeTV.setText(meetingTimeString);
         meetingPersonEditText.setText(eventEntity.getPersonName());
         meetingLocationEditText.setText(eventEntity.getLocation());
+
 
     }
 

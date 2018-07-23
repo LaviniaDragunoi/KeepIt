@@ -28,6 +28,7 @@
             <EditText
                 android:id="@+id/birthday_person_name"
                 android:layout_marginLeft="@dimen/margin"
+                android:textColor="@color/colorPrimaryDark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/add_person_name" />

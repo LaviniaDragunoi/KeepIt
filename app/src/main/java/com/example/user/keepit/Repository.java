@@ -10,7 +10,9 @@ import com.example.user.keepit.database.EventEntity;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.user.keepit.fragment.BirthdayFragment.BIRTHDAY_TYPE;
 import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
+import static com.example.user.keepit.fragment.NoteFragment.NOTE_TYPE;
 
 public class Repository {
     private static final Object LOCK = new Object();
@@ -89,5 +91,13 @@ public class Repository {
 
     public LiveData<List<EventEntity>> getTodaysEvents(String dateString) {
         return mEventDao.getEventsByDate(dateString);
+    }
+
+    public LiveData<List<EventEntity>> getBirthdays() {
+        return mEventDao.getEventsByEventType(BIRTHDAY_TYPE);
+    }
+
+    public LiveData<List<EventEntity>> getNotes() {
+        return mEventDao.getEventsByEventType(NOTE_TYPE);
     }
 }
