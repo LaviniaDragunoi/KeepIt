@@ -93,11 +93,34 @@ public class Repository {
         return mEventDao.getEventsByDate(dateString);
     }
 
+    public List<EventEntity> getTodaysEventsList(String dateString) {
+        return mEventDao.getEventsByDateList(dateString);
+    }
+
     public LiveData<List<EventEntity>> getBirthdays() {
         return mEventDao.getEventsByEventType(BIRTHDAY_TYPE);
+    }
+    public List<EventEntity> getBirthdaysList() {
+        return mEventDao.getEventsListByEventType(BIRTHDAY_TYPE);
     }
 
     public LiveData<List<EventEntity>> getNotes() {
         return mEventDao.getEventsByEventType(NOTE_TYPE);
+    }
+
+    public List<EventEntity> getNotesList() {
+        return mEventDao.getEventsListByEventType(NOTE_TYPE);
+    }
+    public List<EventEntity> getMeetingsList() {
+
+        return mEventDao.getEventsListByEventType(MEETING_TYPE);
+    }
+    public void deleteEventById(int eventId) {
+        EventEntity event = mEventDao.loadEventEntityById(eventId);
+        mEventDao.deleteEvent(event);
+    }
+
+    public void deleteEvents(List<EventEntity> events) {
+        mEventDao.deleteEventsList(events);
     }
 }

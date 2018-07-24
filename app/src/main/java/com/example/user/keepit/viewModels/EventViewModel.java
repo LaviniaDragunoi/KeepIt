@@ -43,4 +43,28 @@ public class EventViewModel extends ViewModel{
     public LiveData<List<EventEntity>> getNotesList() {
         return mRepository.getNotes();
     }
+
+    public void deleteEvent(EventEntity eventEntity) {
+        mRepository.deleteEventById(eventEntity.getId());
+    }
+
+    public void deleteTodaysEvents(String todayDateString) {
+        List<EventEntity> events = mRepository.getTodaysEventsList(todayDateString);
+        mRepository.deleteEvents(events);
+    }
+
+    public void deleteAllBirthdays() {
+        List<EventEntity> events = mRepository.getBirthdaysList();
+        mRepository.deleteEvents(events);
+    }
+
+    public void deleteAllMeetings() {
+        List<EventEntity> events = mRepository.getMeetingsList();
+        mRepository.deleteEvents(events);
+    }
+
+    public void deleteAllNotes() {
+        List<EventEntity> events = mRepository.getNotesList();
+        mRepository.deleteEvents(events);
+    }
 }

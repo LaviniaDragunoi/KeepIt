@@ -40,5 +40,17 @@ public abstract class EventDao {
 
     @Query("SELECT * FROM events WHERE dateString = :date")
     public abstract LiveData<List<EventEntity>> getEventsByDate(String date);
+
+    @Query("SELECT * FROM events WHERE dateString = :date")
+    public abstract List<EventEntity> getEventsByDateList(String date);
+
+    @Query("SELECT * FROM events WHERE id = :eventId")
+    public abstract EventEntity loadEventEntityById(int eventId);
+
+    @Delete
+    public abstract void deleteEventsList(List<EventEntity> events);
+
+    @Query("SELECT * FROM events WHERE eventType = :eventType")
+    public abstract List<EventEntity> getEventsListByEventType(String eventType);
 }
 

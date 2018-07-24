@@ -3,8 +3,10 @@ package com.example.user.keepit.activities;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -40,9 +42,9 @@ import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
 
 
 public class MeetingsActivity extends AppCompatActivity {
-@BindView(R.id.meetings_recycler_view)
+    @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
-@BindView(R.id.empty_meeting_list_textView)
+    @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
@@ -69,25 +71,27 @@ public class MeetingsActivity extends AppCompatActivity {
         //Get the meetingList to set the adapter for
         roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors,roomDB, roomDB.eventDao());
+        mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
         factoryVM = new EventViewModelFactory(mRepository);
-        mViewModel = ViewModelProviders.of(this,factoryVM).get(EventViewModel.class);
+        mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
+       updateTheList();
+    }
+    private void updateTheList() {
         mViewModel.getMeetingsList().observe(this, new Observer<List<EventEntity>>() {
             @Override
             public void onChanged(@Nullable List<EventEntity> eventEntityList) {
-               if(eventEntityList != null && eventEntityList.size() > 0){
-                   meetingsRecyclerView.setAdapter(new ListAdapter(MeetingsActivity.this, eventEntityList));
-                   meetingsRecyclerView.setVisibility(View.VISIBLE);
-                   emptyMeetingListTV.setVisibility(View.INVISIBLE);
-               }else if(eventEntityList == null){
-                   meetingsRecyclerView.setVisibility(View.INVISIBLE);
-                   emptyMeetingListTV.setVisibility(View.VISIBLE);
-               }
+                if (eventEntityList != null && eventEntityList.size() > 0) {
+                    meetingsRecyclerView.setAdapter(new ListAdapter(MeetingsActivity.this, eventEntityList));
+                    meetingsRecyclerView.setVisibility(View.VISIBLE);
+                    emptyMeetingListTV.setVisibility(View.INVISIBLE);
+                } else if (eventEntityList == null) {
+                    meetingsRecyclerView.setVisibility(View.INVISIBLE);
+                    emptyMeetingListTV.setVisibility(View.VISIBLE);
+                }
             }
         });
 
     }
-
 
     //Inflating the menu bar
     @Override
@@ -103,8 +107,8 @@ public class MeetingsActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_delete_from_meetings:
-                //delete items from meetings list
-                deleteAll();
+                //delete meetings list
+               showDeleteConfirmationDialog();
                 return true;
             case R.id.action_add_from_meetings:
                 Intent intent = new Intent(this, EditActivity.class);
@@ -133,7 +137,45 @@ public class MeetingsActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteAll() {
-       
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_meetings_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the event.
+                deleteAllMeetings();
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the event.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
+
+    private void deleteAllMeetings() {
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                mViewModel.deleteAllMeetings();
+                updateTheList();
+
+                finish();
+            }
+        });
+    }
+
+
 }

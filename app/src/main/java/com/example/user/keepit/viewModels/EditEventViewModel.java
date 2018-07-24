@@ -35,4 +35,7 @@ public class EditEventViewModel extends ViewModel{
     }
 
 
+    public void deleteEvent(int eventId) {
+        mRepository.deleteEventById(eventId);
+    }
 }

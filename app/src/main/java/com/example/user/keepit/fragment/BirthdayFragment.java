@@ -2,10 +2,12 @@ package com.example.user.keepit.fragment;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -90,6 +92,12 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
             }
 
         factory = new EditEventModelFactory(mRepository, eventId);
+       updateTheList();
+        showPickerSelected();
+        return rootView;
+    }
+
+    private void updateTheList(){
         mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
         mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
             @Override
@@ -98,8 +106,6 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
 
             }
         });
-        showPickerSelected();
-        return rootView;
     }
 
     private void showPickerSelected() {
@@ -156,7 +162,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         switch (item.getItemId()) {
             case R.id.action_delete:
                 //delete items from birthdays list
-                deleteBirthday();
+                showDeleteConfirmationDialog();
                 return true;
             case R.id.action_save:
                 saveBirthday();
@@ -170,6 +176,21 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     }
 
     private void deleteBirthday() {
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(eventId == DEFAULT_ID) {
+                    birthDate.setText("");
+                    birthdayPersonNameEditText.setText("");
+                    personAgeTextView.setText("");
+
+                }else {
+                    mViewModel.deleteEvent(eventId);
+                    updateTheList();
+                }
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        });
 
     }
 
@@ -197,5 +218,32 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
                 Objects.requireNonNull(getActivity()).finish();
             }
         });
+    }
+
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        builder.setMessage(R.string.delete_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the event.
+                deleteBirthday();
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the event.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

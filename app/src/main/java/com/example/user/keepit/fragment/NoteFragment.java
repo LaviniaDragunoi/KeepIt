@@ -5,11 +5,13 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -96,6 +98,14 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         }
 
         factory = new EditEventModelFactory(mRepository, eventId);
+
+        updateTheList();
+        showPickerSelected();
+
+        return rootView;
+    }
+
+    private void updateTheList() {
         mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
         mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
             @Override
@@ -104,9 +114,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
 
             }
         });
-        showPickerSelected();
-
-        return rootView;
     }
 
     private void showPickerSelected() {
@@ -154,7 +161,8 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_delete:
-                //delete items from meetings list
+                //delete items from notes list
+                showDeleteConfirmationDialog();
                 return true;
             case R.id.action_save:
                 saveNote();
@@ -167,6 +175,50 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         }
     }
 
+    private void deleteNote() {
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(eventId == DEFAULT_ID) {
+                    noteTitleEditText.setText("");
+                    noteDeadlineTextView.setText("");
+                    noteTextEditText.setText("");
+
+                }else {
+                    mViewModel.deleteEvent(eventId);
+                    updateTheList();
+                }
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        });
+    }
+
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        builder.setMessage(R.string.delete_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the event.
+                deleteNote();
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the event.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
     private void saveNote() {
         eventType = NOTE_TYPE;
         title = noteTitleEditText.getText().toString();
@@ -176,7 +228,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         personName = "";
         location = "";
         note = noteTextEditText.getText().toString();
-
         EventEntity noteEvent = new EventEntity(eventType, title, date, dateString, time,
                 personName, location, note);
 

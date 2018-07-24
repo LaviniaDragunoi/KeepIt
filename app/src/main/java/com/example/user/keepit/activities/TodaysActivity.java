@@ -2,7 +2,9 @@ package com.example.user.keepit.activities;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -37,6 +39,8 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
+
 public class TodaysActivity extends AppCompatActivity {
 
     @BindView(R.id.todays_recycler_view)
@@ -50,6 +54,7 @@ public class TodaysActivity extends AppCompatActivity {
     private EventViewModel eventVM;
     @BindView(R.id.empty_today_list_textView)
     TextView emptyTextViewToday;
+    private String todayDateString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class TodaysActivity extends AppCompatActivity {
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = new Date();
-        String todayDateString = formatter.format(date);
+        todayDateString = formatter.format(date);
         todayDate.setText(todayDateString);
 
         roomDB = AppRoomDatabase.getsInstance(this);
@@ -73,6 +78,10 @@ public class TodaysActivity extends AppCompatActivity {
         repository = Repository.getsInstance(executors,roomDB,roomDB.eventDao());
         factoryVM = new EventViewModelFactory(repository);
         eventVM = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
+       updateTheList();
+
+    }
+    private void updateTheList() {
         eventVM.getEventsOfToday(todayDateString).observe(this, eventEntityList -> {
             if(eventEntityList != null && eventEntityList.size() > 0 ){
 
@@ -87,11 +96,6 @@ public class TodaysActivity extends AppCompatActivity {
             }
 
         });
-
-
-
-
-
     }
 
     //Inflating the menu bar
@@ -126,8 +130,54 @@ public class TodaysActivity extends AppCompatActivity {
                 intent = new Intent(this, AddTodayActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_delete_from_todays:
+                showDeleteConfirmationDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void deleteAllForToday() {
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                eventVM.deleteTodaysEvents(todayDateString);
+                    updateTheList();
+
+                finish();
+            }
+        });
+
+    }
+
+
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_today_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the event.
+                deleteAllForToday();
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the event.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 }
+
