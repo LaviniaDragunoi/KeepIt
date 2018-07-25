@@ -70,7 +70,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private String personName;
     private String location;
     private String note;
-
+    private int done;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -188,7 +188,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         switch (item.getItemId()) {
             case R.id.action_delete:
                 //delete items from meetings list
-                showDeleteConfirmationDialog();
+                showDeleteDialog();
                 return true;
             case R.id.action_save:
                 saveMeeting();
@@ -210,8 +210,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             personName = meetingPersonEditText.getText().toString();
             location = meetingLocationEditText.getText().toString();
             note = " ";
+            done = 0;
             EventEntity meeting = new EventEntity(eventType, title, date, dateString, time,
-                    personName, location, note);
+                    personName, location, note, done);
 
             executors.diskIO().execute(new Runnable() {
                 @Override
@@ -248,7 +249,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         });
     }
 
-    private void showDeleteConfirmationDialog() {
+    private void showDeleteDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));

@@ -23,10 +23,12 @@ public class EventEntity implements Parcelable{
     private String personName;
     private String location;
     private String note;
-
+    // this variable will store only 0 or 1, if the event was checked as done the
+    // variable will store the 1 value, otherwise it will store value 0;
+    private int done;
 
     public EventEntity(int id, String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note){
+                       String location, String note, int done){
         this.id = id;
         this.eventType = eventType;
         this.title = title;
@@ -36,10 +38,11 @@ public class EventEntity implements Parcelable{
         this.personName = personName;
         this.location = location;
         this.note = note;
+        this.done = done;
     }
     @Ignore
     public EventEntity(String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note){
+                       String location, String note, int done){
         this.id = id;
         this.eventType = eventType;
         this.title = title;
@@ -49,7 +52,10 @@ public class EventEntity implements Parcelable{
         this.personName = personName;
         this.location = location;
         this.note = note;
+        this.done = done;
     }
+
+
     protected EventEntity(Parcel in) {
         id = in.readInt();
         eventType = in.readString();
@@ -59,6 +65,7 @@ public class EventEntity implements Parcelable{
         personName = in.readString();
         location = in.readString();
         note = in.readString();
+        done = in.readInt();
     }
 
     public static final Creator<EventEntity> CREATOR = new Creator<EventEntity>() {
@@ -145,6 +152,14 @@ public class EventEntity implements Parcelable{
         this.note = note;
     }
 
+    public int getDone() {
+        return done;
+    }
+
+    public void setDone(int done) {
+        this.done = done;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -160,5 +175,6 @@ public class EventEntity implements Parcelable{
         dest.writeString(personName);
         dest.writeString(location);
         dest.writeString(note);
+        dest.writeInt(done);
     }
 }

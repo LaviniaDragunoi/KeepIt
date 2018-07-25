@@ -1,8 +1,10 @@
 package com.example.user.keepit.adapters;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,9 +14,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
+import com.example.user.keepit.Repository;
 import com.example.user.keepit.activities.EditActivity;
+import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.viewModels.EditEventViewModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,14 +40,27 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public static final String EXTRA_EVENT = "currentEvent";
     public static final String EXTRA_EVENT_ID = "eventId";
     public static final String EVENT_TYPE = "eventType";
+    private static final int EVENT_DONE = 1;
+    private static final int EVENT_NOT_DONE = 0;
     private List<EventEntity> eventsList;
     private Context mContext;
+    private EditEventViewModel viewModel;
+    private AppRoomDatabase roomDb;
+    private AppExecutors executors;
+    private Repository mRepository;
+    private EditEventModelFactory factory;
 
     public ListAdapter(Context context, List<EventEntity> eventsList){
         this.mContext = context;
         this.eventsList = eventsList;
     }
 
+    private void initializeACC(){
+        roomDb = AppRoomDatabase.getsInstance(mContext);
+        executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+
+    }
     @NonNull
     @Override
     public ListAdapter.ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,8 +73,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         EventEntity eventEntity = eventsList.get(position);
 
-        TextView checkedTextView = holder.checkedTV;
-
+        ImageView checkedImageView = holder.checkedTV;
+        int isDone = eventEntity.getDone();
+        if(isDone == EVENT_NOT_DONE){
+            checkedImageView.setImageResource(R.drawable.ic_check_box);
+        }else if(isDone == EVENT_DONE){
+            checkedImageView.setImageResource(R.drawable.ic_done_accent);
+        }
         TextView eventTypeTextView = holder.eventTypeTV;
         String eventTypeString = eventEntity.getEventType();
         eventTypeTextView.setText(eventTypeString);
@@ -82,12 +107,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             }
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        initializeACC();
+
+        checkedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkedTextView.isShown()){
-                    checkedTextView.setVisibility(View.INVISIBLE);
-                }else checkedTextView.setVisibility(View.VISIBLE);
+                if (isDone == EVENT_NOT_DONE){
+                    eventEntity.setDone(EVENT_DONE);
+                    checkedImageView.setImageResource(R.drawable.ic_done_accent);
+                    mRepository.updateExistingEvent(eventEntity);
+                }else if(isDone == EVENT_DONE){
+                    eventEntity.setDone(EVENT_NOT_DONE);
+                    checkedImageView.setImageResource(R.drawable.ic_check_box);
+                    mRepository.updateExistingEvent(eventEntity);
+                }
             }
         });
 
@@ -101,7 +134,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     public class ListViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.checked_TV)
-        TextView checkedTV;
+        ImageView checkedTV;
         @BindView(R.id.event_type_TV)
         TextView eventTypeTV;
         @BindView(R.id.title_TV)

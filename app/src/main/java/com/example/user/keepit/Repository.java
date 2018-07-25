@@ -9,7 +9,9 @@ import com.example.user.keepit.database.EventEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 import static com.example.user.keepit.fragment.BirthdayFragment.BIRTHDAY_TYPE;
 import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
 import static com.example.user.keepit.fragment.NoteFragment.NOTE_TYPE;
@@ -77,7 +79,13 @@ public class Repository {
     }
 
     public void updateExistingEvent(EventEntity event) {
-        mEventDao.updateEvent(event);
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mEventDao.updateEvent(event);
+            }
+        });
+
     }
 
     public LiveData<List<EventEntity>> getInitialEventsList() {

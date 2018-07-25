@@ -4,15 +4,13 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal">
-    <TextView
+    <ImageView
         android:id="@+id/checked_TV"
         android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:padding="@dimen/margin"
-        android:drawableStart="@drawable/ic_done_accent"
-        android:visibility="invisible"/>
+        tools:src="@drawable/ic_check_box"/>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_weight="4"

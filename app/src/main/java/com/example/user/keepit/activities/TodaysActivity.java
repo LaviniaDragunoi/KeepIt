@@ -27,6 +27,7 @@ import com.example.user.keepit.activities.NotesActivity;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.utils.Utils;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
 
@@ -90,6 +91,7 @@ public class TodaysActivity extends AppCompatActivity {
                 todaysRecylerView.setLayoutManager(layoutManagerReviews);
                 todaysRecylerView.setAdapter(new ListAdapter(this, eventEntityList));
                 emptyTextViewToday.setVisibility(View.INVISIBLE);
+
             }else if(eventEntityList == null){
                 todaysRecylerView.setVisibility(View.INVISIBLE);
                 emptyTextViewToday.setVisibility(View.VISIBLE);

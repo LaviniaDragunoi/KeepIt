@@ -70,7 +70,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     private String personName;
     private String location;
     private String note;
-
+    private int done;
     //Empty constructor;
     public NoteFragment(){}
 
@@ -162,7 +162,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         switch (item.getItemId()) {
             case R.id.action_delete:
                 //delete items from notes list
-                showDeleteConfirmationDialog();
+                showDeleteDialog();
                 return true;
             case R.id.action_save:
                 saveNote();
@@ -193,7 +193,8 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         });
     }
 
-    private void showDeleteConfirmationDialog() {
+
+    private void showDeleteDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
@@ -228,8 +229,9 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         personName = "";
         location = "";
         note = noteTextEditText.getText().toString();
+        done = 0;
         EventEntity noteEvent = new EventEntity(eventType, title, date, dateString, time,
-                personName, location, note);
+                personName, location, note, done);
 
         executors.diskIO().execute(new Runnable() {
             @Override

@@ -1,7 +1,10 @@
 package com.example.user.keepit.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,6 +14,7 @@ import com.example.user.keepit.fragment.BirthdayFragment;
 import com.example.user.keepit.fragment.MeetingFragment;
 import com.example.user.keepit.fragment.NoteFragment;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
@@ -28,6 +32,9 @@ public class EditActivity extends AppCompatActivity {
     public static final String EVENT_ENTITY_ID = "id";
     private int id = DEFAULT_ID;
     private EventEntity currentEvent;
+    public interface OnBackPressed {
+        void onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +101,7 @@ public class EditActivity extends AppCompatActivity {
                         addBirthdayFragment.setArguments(bundle);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.add_birthday_container, addBirthdayFragment)
+                                .disallowAddToBackStack()
                                 .commit();
                         break;
                     }
@@ -111,6 +119,19 @@ public class EditActivity extends AppCompatActivity {
                     }
                 }
                 }
+            }
+        }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment instanceof BirthdayFragment) {
+                BirthdayFragment.backButtonWasPressed();
             }
         }
     }
