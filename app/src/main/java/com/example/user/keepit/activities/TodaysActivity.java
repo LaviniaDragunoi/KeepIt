@@ -14,20 +14,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
-import com.example.user.keepit.activities.AddTodayActivity;
-import com.example.user.keepit.activities.BirthdaysActivity;
-import com.example.user.keepit.activities.MainActivity;
-import com.example.user.keepit.activities.MeetingsActivity;
-import com.example.user.keepit.activities.NotesActivity;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
-import com.example.user.keepit.utils.Utils;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
 
@@ -48,6 +42,10 @@ public class TodaysActivity extends AppCompatActivity {
     RecyclerView todaysRecylerView;
     @BindView(R.id.todays_date_text_view)
     TextView todayDate;
+    @BindView(R.id.previous_day_button)
+    Button previousBttn;
+    @BindView(R.id.next_day_button)
+    Button nextBttn;
     private AppRoomDatabase roomDB;
     private AppExecutors executors;
     private EventViewModelFactory factoryVM;
@@ -63,40 +61,106 @@ public class TodaysActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todays);
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        setTitle(getString(R.string.todays_name));
+
         //customize the recyclerView appearance
          DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
          itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
          todaysRecylerView.addItemDecoration(itemDecoration);
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = new Date();
-        todayDateString = formatter.format(date);
-        todayDate.setText(todayDateString);
-
+        setUpToday();
+    }
+    private void updateTheList(String dateString) {
         roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
         repository = Repository.getsInstance(executors,roomDB,roomDB.eventDao());
         factoryVM = new EventViewModelFactory(repository);
         eventVM = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
-       updateTheList();
-
-    }
-    private void updateTheList() {
-        eventVM.getEventsOfToday(todayDateString).observe(this, eventEntityList -> {
-            if(eventEntityList != null && eventEntityList.size() > 0 ){
-
-                RecyclerView.LayoutManager layoutManagerReviews = new
-                        LinearLayoutManager(this);
-                todaysRecylerView.setLayoutManager(layoutManagerReviews);
-                todaysRecylerView.setAdapter(new ListAdapter(this, eventEntityList));
-                emptyTextViewToday.setVisibility(View.INVISIBLE);
-
-            }else if(eventEntityList == null){
+        RecyclerView.LayoutManager layoutManagerReviews = new
+                LinearLayoutManager(this);
+        todaysRecylerView.setLayoutManager(layoutManagerReviews);
+        emptyTextViewToday.setVisibility(View.VISIBLE);
+        todaysRecylerView.setVisibility(View.INVISIBLE);
+        eventVM.getEventsOfToday(dateString).observe(this, eventEntityList -> {
+            if(eventEntityList == null){
                 todaysRecylerView.setVisibility(View.INVISIBLE);
                 emptyTextViewToday.setVisibility(View.VISIBLE);
+
+
+            }else if(eventEntityList.size() > 0){
+todaysRecylerView.setVisibility(View.VISIBLE);
+                todaysRecylerView.setAdapter(new ListAdapter(this, eventEntityList));
+                emptyTextViewToday.setVisibility(View.INVISIBLE);
             }
 
+        });
+    }
+
+    private void setUpToday(){
+        setTitle(getString(R.string.todays_name));
+        previousBttn.setText(getString(R.string.yesterday));
+        nextBttn.setText(getString(R.string.tomorrow));
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        todayDateString = formatter.format(date);
+        todayDate.setText(todayDateString);
+        updateTheList(todayDateString);
+        previousBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setUpYesterday();
+
+            }
+        });
+        nextBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setUpTomorrow();
+
+            }
+        });
+
+    }
+
+    private void setUpTomorrow() {
+        setTitle(getString(R.string.tomorrow));
+        previousBttn.setText(getString(R.string.todays_name));
+        nextBttn.setVisibility(View.INVISIBLE);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+       Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+        String dateString = formatter.format(tomorrow);
+        todayDate.setText(dateString);
+        updateTheList(dateString);
+        previousBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setUpToday();
+                nextBttn.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    private void setUpYesterday() {
+        setTitle(getString(R.string.yesterday));
+        previousBttn.setVisibility(View.INVISIBLE);
+        nextBttn.setText(R.string.todays_name);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        Date yesterday = calendar.getTime();
+        String dateString = formatter.format(yesterday);
+        todayDate.setText(dateString);
+        updateTheList(dateString);
+        nextBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setUpToday();
+                previousBttn.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -146,7 +210,7 @@ public class TodaysActivity extends AppCompatActivity {
             public void run() {
 
                 eventVM.deleteTodaysEvents(todayDateString);
-                    updateTheList();
+                    updateTheList(todayDateString);
 
                 finish();
             }

@@ -43,11 +43,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
     <Button
+        android:id="@+id/previous_day_button"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:layout_height="wrap_content"
-        android:text="@string/yesterday"
+        tools:text="@string/yesterday"
         android:background="@color/backgroundColor"
         android:elevation="8dp"
         android:focusableInTouchMode="true"
@@ -55,12 +56,13 @@
         android:drawableLeft="@drawable/ic_navigate_prev"
         tools:ignore="ButtonStyle,RtlHardcoded" />
         <Button
+            android:id="@+id/next_day_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/ic_navigate_next"
-            android:text="@string/tomorrow"
+            tools:text="@string/tomorrow"
             android:background="@color/backgroundColor"
             android:elevation="8dp"
             android:focusableInTouchMode="true"

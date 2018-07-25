@@ -2,7 +2,7 @@
     <string name="app_name">KeepIt</string>
     <string name="about">About</string>
     <string name="home_name">Home</string>
-    <string name="todays_name">Today\'s</string>
+    <string name="todays_name">Today</string>
     <string name="meetings_name">Meetings</string>
     <string name="birthday_name">Birthdays</string>
     <string name="notes_name">Notes</string>
