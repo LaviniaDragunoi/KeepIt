@@ -48,6 +48,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     private static final String DATE_BUNDLE_STRING = "dateString";
     private static final String PERSON_NAME_BUNDLE = "personName";
     private static final long DEFAULT_LONG = 0;
+    private static final String PERSON_AGE = "age";
     private static Context context;
     @BindView(R.id.picker_birth_date)
     TextView birthDate;
@@ -108,15 +109,15 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
 
-//        if(savedInstanceState != null){
-//            long birthDateDateLong = savedInstanceState.getLong(DATE_BUNDLE, DEFAULT_LONG);
-//            birthDateDate = new Date(birthDateDateLong);
-//            String DateString = savedInstanceState.getString(DATE_BUNDLE_STRING);
-//            birthDate.setText(dateString);
-//            String name = savedInstanceState.getString(PERSON_NAME_BUNDLE);
-//            birthdayPersonNameEditText.setText(name);
-//            eventId = DEFAULT_ID;
-//        }else {
+        if(savedInstanceState != null){
+            long birthDateDateLong = savedInstanceState.getLong(DATE_BUNDLE, DEFAULT_LONG);
+            birthDateDate = new Date(birthDateDateLong);
+            String DateString = savedInstanceState.getString(DATE_BUNDLE_STRING);
+            birthDate.setText(dateString);
+            String name = savedInstanceState.getString(PERSON_NAME_BUNDLE);
+            birthdayPersonNameEditText.setText(name);
+            personAgeTextView.setText(valueOf(savedInstanceState.getInt(PERSON_AGE)));
+        }else {
             Bundle bundle = getArguments();
             if (bundle != null) {
                 if (bundle.containsKey(EXTRA_EVENT)) {
@@ -129,7 +130,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
 
                 }
 
-            }
+            }}
             factory = new EditEventModelFactory(mRepository, eventId);
             updateTheList();
             showPickerSelected();
@@ -276,6 +277,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         bundle.putLong(DATE_BUNDLE, birthDateDate.getTime());
         bundle.putString(DATE_BUNDLE_STRING, birthDateString);
         bundle.putString(PERSON_NAME_BUNDLE, birthdayPersonNameEditText.getText().toString());
+        bundle.putInt(PERSON_AGE, Integer.parseInt(personAgeTextView.getText().toString()));
     }
     private void saveBirthday() {
         eventType = BIRTHDAY_TYPE;
