@@ -4,10 +4,12 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,6 +50,8 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     EditText meetingPersonEditText;
     @BindView(R.id.meeting_location)
     EditText meetingLocationEditText;
+    @BindView(R.id.location_map)
+    TextView showLocationTextView;
     private Date meetingDateDate;
     private String meetingDateString;
     private String meetingTimeString;
@@ -71,6 +75,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private String location;
     private String note;
     private int done;
+    private int age;
 
     //Empty constructor;
     public MeetingFragment(){}
@@ -102,6 +107,12 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         updateTheList();
        showPickerSelected();
 
+       showLocationTextView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               showLocationOnMap(meetingLocationEditText.getText().toString());
+           }
+       });
         return rootView;
     }
 
@@ -181,6 +192,23 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private void showLocationOnMap(String location){
+        //get the location to String
+        location = meetingLocationEditText.getText().toString();
+        //build the address Uri
+        Uri locationUri = new Uri.Builder()
+                .scheme("geo")
+                .path("0,0")
+                .appendQueryParameter("q",location)
+                .build();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(locationUri);
+        if(intent.resolveActivity(getActivity().getPackageManager()) != null){
+            startActivity(intent);
+        }
+
+    }
+
     //Creating Intents for each menu item.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -195,10 +223,27 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
                 return true;
             case R.id.action_share:
                //share meeting
+                String name = meetingPersonEditText.getText().toString();
+                String locationMeeting = meetingLocationEditText.getText().toString();
+
+                createSharingText(name, meetingDateString, meetingTimeString, locationMeeting);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void createSharingText(String personName, String dateString, String time, String location){
+        String mimeType = "text/plain";
+        String title = "Meeting";
+        String message = personName + " ,please don't forget of our meeting schedule on " + dateString + " at " + time;
+        ShareCompat.IntentBuilder
+                /* The from method specifies the Context from which this share is coming from */
+                .from(getActivity())
+                .setType(mimeType)
+                .setChooserTitle(title)
+                .setText(message)
+                .startChooser();
     }
 
     private void saveMeeting() {
@@ -211,8 +256,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             location = meetingLocationEditText.getText().toString();
             note = " ";
             done = 0;
+            age = 0;
             EventEntity meeting = new EventEntity(eventType, title, date, dateString, time,
-                    personName, location, note, done);
+                    personName, location, note, done, age);
 
             executors.diskIO().execute(new Runnable() {
                 @Override

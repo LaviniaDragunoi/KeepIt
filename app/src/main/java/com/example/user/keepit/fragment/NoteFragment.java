@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,6 +72,8 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     private String location;
     private String note;
     private int done;
+    private int age;
+
     //Empty constructor;
     public NoteFragment(){}
 
@@ -155,6 +158,19 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private void createSharingText(String deadlineString, String noteText){
+        String mimeType = "text/plain";
+        String title = "Note";
+        String message = "This note has it's deadline on " + deadlineString + " \n" + noteText;
+        ShareCompat.IntentBuilder
+                /* The from method specifies the Context from which this share is coming from */
+                .from(getActivity())
+                .setType(mimeType)
+                .setChooserTitle(title)
+                .setText(message)
+                .startChooser();
+    }
+
     //Creating Intents for each menu item.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -169,6 +185,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
                 return true;
             case R.id.action_share:
                 //share meeting
+                createSharingText(noteDeadlineString, noteTextEditText.getText().toString());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -230,8 +247,9 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         location = "";
         note = noteTextEditText.getText().toString();
         done = 0;
+        age = 0;
         EventEntity noteEvent = new EventEntity(eventType, title, date, dateString, time,
-                personName, location, note, done);
+                personName, location, note, done, age);
 
         executors.diskIO().execute(new Runnable() {
             @Override

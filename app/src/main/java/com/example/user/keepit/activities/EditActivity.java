@@ -78,7 +78,6 @@ public class EditActivity extends AppCompatActivity {
                 } else if (intent.hasExtra(EXTRA_EVENT)) {
                 currentEvent = intent.getParcelableExtra(EXTRA_EVENT);
                 String eventType = currentEvent.getEventType();
-              //  id = currentEvent.getId();
                 switch (eventType) {
                     case MEETING_TYPE: {
                         setTitle(R.string.edit_meeting);

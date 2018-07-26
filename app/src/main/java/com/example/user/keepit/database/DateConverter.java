@@ -19,3 +19,4 @@ public class DateConverter {
         return date == null ? null : date.getTime();
     }
 }
+

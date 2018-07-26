@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +31,7 @@ import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -53,6 +55,8 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     EditText birthdayPersonNameEditText;
     @BindView(R.id.person_age)
     TextView personAgeTextView;
+    @BindView(R.id.send_message_tv)
+    TextView sendMessageTextView;
     private Date birthDateDate;
     private String birthDateString;
 
@@ -73,6 +77,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
     private String location;
     private String note;
     private int done;
+    private int age;
     private EditEventModelFactory factory;
     private EventEntity currentEvent;
 
@@ -84,7 +89,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
             return false;
         }
     };
-   ;
+    ;
 
     //Empty constructor;
     public BirthdayFragment() {
@@ -99,15 +104,19 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         birthDate.setOnTouchListener(mTouchListener);
         birthdayPersonNameEditText.setOnTouchListener(mTouchListener);
 
-        if(savedInstanceState != null){
-            long birthDateDateLong = savedInstanceState.getLong(DATE_BUNDLE, DEFAULT_LONG);
-            birthDateDate = new Date(birthDateDateLong);
-            String DateString = savedInstanceState.getString(DATE_BUNDLE_STRING);
-            birthDate.setText(dateString);
-            String name = savedInstanceState.getString(PERSON_NAME_BUNDLE);
-            birthdayPersonNameEditText.setText(name);
-            eventId = DEFAULT_ID;
-        }else {
+        roomDb = AppRoomDatabase.getsInstance(getContext());
+        executors = AppExecutors.getInstance();
+        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+
+//        if(savedInstanceState != null){
+//            long birthDateDateLong = savedInstanceState.getLong(DATE_BUNDLE, DEFAULT_LONG);
+//            birthDateDate = new Date(birthDateDateLong);
+//            String DateString = savedInstanceState.getString(DATE_BUNDLE_STRING);
+//            birthDate.setText(dateString);
+//            String name = savedInstanceState.getString(PERSON_NAME_BUNDLE);
+//            birthdayPersonNameEditText.setText(name);
+//            eventId = DEFAULT_ID;
+//        }else {
             Bundle bundle = getArguments();
             if (bundle != null) {
                 if (bundle.containsKey(EXTRA_EVENT)) {
@@ -121,21 +130,42 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
                 }
 
             }
-            if (eventId != DEFAULT_ID) {
-                roomDb = AppRoomDatabase.getsInstance(getContext());
-                executors = AppExecutors.getInstance();
-                mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
-
-                factory = new EditEventModelFactory(mRepository, eventId);
-
-
+            factory = new EditEventModelFactory(mRepository, eventId);
             updateTheList();
-        }}
-
-
-        showPickerSelected();
-
+            showPickerSelected();
+            sendMessageTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createMessage(birthdayPersonNameEditText.getText().toString());
+            }
+        });
         return rootView;
+    }
+
+    private void createMessage(String personName){
+        String mimeType = "text/plain";
+        String title = "Happy birthday!";
+        String message = personName + " I wish you Happy Birthday!";
+        ShareCompat.IntentBuilder
+                /* The from method specifies the Context from which this share is coming from */
+                .from(getActivity())
+                .setType(mimeType)
+                .setChooserTitle(title)
+                .setText(message)
+                .startChooser();
+    }
+
+    private void createSharingText(String personName, String dateString){
+        String mimeType = "text/plain";
+        String title = "Friend birthday";
+        String message = personName+ " was born " + " on " + dateString;
+        ShareCompat.IntentBuilder
+                /* The from method specifies the Context from which this share is coming from */
+                .from(getActivity())
+                .setType(mimeType)
+                .setChooserTitle(title)
+                .setText(message)
+                .startChooser();
     }
 
     public void updateTheList(){
@@ -172,7 +202,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         birthDateDate = eventEntity.getDate();
         birthDateString = eventEntity.getDateString();
         birthdayPersonNameEditText.setText(eventEntity.getPersonName());
-        personAgeTextView.setText(valueOf(getAge(birthDateDate)));
+        personAgeTextView.setText(valueOf(eventEntity.getAge()));
 
     }
     @Override
@@ -184,8 +214,13 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         birthDate.setText(dateString);
     }
 
-    private int getAge(Date date) {
-        return 20;
+    public int getAge(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        Date todayDate = calendar.getTime();
+        int currentYear = calendar.get(Calendar.YEAR);
+        calendar.setTime(date);
+        int birthYear = calendar.get(Calendar.YEAR);
+        return currentYear - birthYear;
     }
 
 
@@ -210,6 +245,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
                 return true;
             case R.id.action_share:
                 //share meeting
+                createSharingText(birthdayPersonNameEditText.getText().toString(), birthDateString);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -251,8 +287,9 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         location = " ";
         note = " ";
         done = 0;
+        age = getAge(birthDateDate);
         EventEntity birthday = new EventEntity(eventType, title,date, dateString, time, personName,
-                location, note, done);
+                location, note, done, age);
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {

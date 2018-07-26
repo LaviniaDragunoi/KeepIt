@@ -14,6 +14,7 @@ public abstract class AppRoomDatabase extends RoomDatabase {
     private static final Object LOCK = new Object();
     public static final String DATABASE_NAME = "events";
     private static Builder<AppRoomDatabase> sInstance;
+    public abstract EventDao eventDao();
 
 
     public static AppRoomDatabase getsInstance(Context context) {
@@ -26,5 +27,5 @@ public abstract class AppRoomDatabase extends RoomDatabase {
         return sInstance.build();
     }
 
-    public abstract EventDao eventDao();
+
 }
