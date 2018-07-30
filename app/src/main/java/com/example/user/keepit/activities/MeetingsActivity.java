@@ -28,10 +28,13 @@ import com.example.user.keepit.viewModels.EditEventViewModel;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 import java.util.Objects;
 
+import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -46,6 +49,8 @@ public class MeetingsActivity extends AppCompatActivity {
     RecyclerView meetingsRecyclerView;
     @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
+    @BindView(R.id.meetings_adView)
+    AdView meetingAdVIew;
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
     private AppExecutors executors;
@@ -59,6 +64,12 @@ public class MeetingsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.meetings_name));
+
+        //load the adView
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        meetingAdVIew.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);

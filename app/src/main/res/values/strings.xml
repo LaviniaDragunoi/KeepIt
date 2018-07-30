@@ -21,7 +21,7 @@
     <string name="delete_birthdays_dialog_message">Delete all birthdays?</string>
     <string name="delete_meetings_dialog_message">Delete all meetings?</string>
     <string name="delete_notes_dialog_message">Delete all notes?</string>
-    <string name="unsaved_changes_message">Discard your changes and quit editing</string>
+    <string name="unsaved_changes_message">Discard your changes and quit editing?</string>
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep editing</string>
     <string name="add">Add</string>
@@ -53,4 +53,5 @@
     <string name="exception_date_format">Problem formatting input date</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="ads">"ca-app-pub-3940256099942544/6300978111"</string>
 </resources>

@@ -89,6 +89,7 @@ public class WidgetService extends RemoteViewsService {
             RemoteViews views = new RemoteViews(mContext.getPackageName(),
                     R.layout.event_item);
             if(todayEvents != null) {
+                views.setViewVisibility(R.id.today_list_widget, View.INVISIBLE);
                 int isChecked = todayEvents.get(position).getDone();
                 if (isChecked == 0) {
                     views.setImageViewResource(R.id.checked_TV, R.drawable.ic_check_box);
@@ -109,6 +110,7 @@ public class WidgetService extends RemoteViewsService {
                 fillInIntent.putExtras(bundle);
                 views.setOnClickFillInIntent(R.id.edit_event, fillInIntent);
             }else {
+                views.setViewVisibility(R.id.today_list_widget, View.INVISIBLE);
                 views.setViewVisibility(R.id.empty_today_widget, View.VISIBLE);
             }
             return views;

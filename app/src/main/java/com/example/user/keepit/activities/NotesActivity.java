@@ -27,6 +27,8 @@ import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +45,8 @@ public class NotesActivity extends AppCompatActivity {
     RecyclerView notesRecyclerView;
     @BindView(R.id.empty_note_list_textView)
     TextView emptyNotesListTV;
+    @BindView(R.id.notes_adView)
+    AdView notesAdView;
 
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
@@ -57,6 +61,12 @@ public class NotesActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.notes_name));
+
+        //load the adView
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        notesAdView.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);

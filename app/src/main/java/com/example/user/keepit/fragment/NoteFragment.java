@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
+import com.example.user.keepit.activities.EditActivity;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
@@ -42,7 +44,7 @@ import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
 import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
 
-public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected{
+public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, IOnBackPressed{
 
     @BindView(R.id.picker_note_deadline)
     TextView noteDeadlineTextView;
@@ -73,19 +75,35 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     private String note;
     private int done;
     private int age;
-
+    public boolean isChanged = false;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            isChanged = true;
+            return false;
+        }
+    };
     //Empty constructor;
     public NoteFragment(){}
 
+    @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.note_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
 
+        noteTitleEditText.setOnTouchListener(mTouchListener);
+        noteDeadlineTextView.setOnTouchListener(mTouchListener);
+        noteTextEditText.setOnTouchListener(mTouchListener);
         roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
+        if(savedInstanceState != null){
+            if(eventId != DEFAULT_ID){
+                ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.edit_note));
+            }
 
+        }
         Bundle bundle = getArguments();
         if(bundle != null) {
             if (bundle.containsKey(EXTRA_EVENT)) {
@@ -95,6 +113,8 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
 
             }else {
                 eventId = bundle.getInt(EVENT_ENTITY_ID);
+                ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.add_note));
+
 
             }
 
@@ -265,5 +285,10 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
             }
         });
 
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return isChanged;
     }
 }

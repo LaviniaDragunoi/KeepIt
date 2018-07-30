@@ -43,12 +43,8 @@ import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
 import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
 import static java.lang.String.valueOf;
 
-public class BirthdayFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected{
-    private static final String DATE_BUNDLE = "date";
-    private static final String DATE_BUNDLE_STRING = "dateString";
-    private static final String PERSON_NAME_BUNDLE = "personName";
-    private static final long DEFAULT_LONG = 0;
-    private static final String PERSON_AGE = "age";
+public class BirthdayFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, IOnBackPressed{
+
     private static Context context;
     @BindView(R.id.picker_birth_date)
     TextView birthDate;
@@ -90,7 +86,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
             return false;
         }
     };
-    ;
+
 
     //Empty constructor;
     public BirthdayFragment() {
@@ -110,14 +106,11 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
 
         if(savedInstanceState != null){
-            long birthDateDateLong = savedInstanceState.getLong(DATE_BUNDLE, DEFAULT_LONG);
-            birthDateDate = new Date(birthDateDateLong);
-            String DateString = savedInstanceState.getString(DATE_BUNDLE_STRING);
-            birthDate.setText(dateString);
-            String name = savedInstanceState.getString(PERSON_NAME_BUNDLE);
-            birthdayPersonNameEditText.setText(name);
-            personAgeTextView.setText(valueOf(savedInstanceState.getInt(PERSON_AGE)));
-        }else {
+            if(eventId != DEFAULT_ID){
+                ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.edit_birthday));
+            }
+
+        }
             Bundle bundle = getArguments();
             if (bundle != null) {
                 if (bundle.containsKey(EXTRA_EVENT)) {
@@ -127,10 +120,10 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
 
                 } else {
                     eventId = bundle.getInt(EVENT_ENTITY_ID);
-
+                    ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.add_birthday));
                 }
 
-            }}
+            }
             factory = new EditEventModelFactory(mRepository, eventId);
             updateTheList();
             showPickerSelected();
@@ -204,13 +197,14 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         birthDateString = eventEntity.getDateString();
         birthdayPersonNameEditText.setText(eventEntity.getPersonName());
         personAgeTextView.setText(valueOf(eventEntity.getAge()));
+        age = eventEntity.getAge();
 
     }
     @Override
     public void onDateSelected(Date date, String dateString) {
         birthDateDate = date;
         birthDateString = dateString;
-        int age = getAge(date);
+        age = getAge(date);
         personAgeTextView.setText(valueOf(age));
         birthDate.setText(dateString);
     }
@@ -271,14 +265,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         });
 
     }
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle bundle) {
-        super.onSaveInstanceState(bundle);
-        bundle.putLong(DATE_BUNDLE, birthDateDate.getTime());
-        bundle.putString(DATE_BUNDLE_STRING, birthDateString);
-        bundle.putString(PERSON_NAME_BUNDLE, birthdayPersonNameEditText.getText().toString());
-        bundle.putInt(PERSON_AGE, Integer.parseInt(personAgeTextView.getText().toString()));
-    }
+
     private void saveBirthday() {
         eventType = BIRTHDAY_TYPE;
         title = " ";
@@ -289,7 +276,6 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         location = " ";
         note = " ";
         done = 0;
-        age = getAge(birthDateDate);
         EventEntity birthday = new EventEntity(eventType, title,date, dateString, time, personName,
                 location, note, done, age);
         executors.diskIO().execute(new Runnable() {
@@ -351,14 +337,9 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         alertDialog.show();
     }
 
-    public static void backButtonWasPressed() {
-        DialogInterface.OnClickListener dialogInterface = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
-        };
-        showUnsavedDialog(dialogInterface);
+    @Override
+    public boolean onBackPressed() {
+        return isChanged;
     }
-
 }

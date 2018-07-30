@@ -1,5 +1,6 @@
 package com.example.user.keepit.fragment;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
+import com.example.user.keepit.activities.EditActivity;
 import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
@@ -38,8 +41,12 @@ import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
 import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
 
-public class MeetingFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, MyTimePickerFragment.OnTimePickerSelected{
+public class MeetingFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, MyTimePickerFragment.OnTimePickerSelected, IOnBackPressed{
 
+
+    private static final String TIME_BUNDLE = "meetingTime";
+    private static final String DATE_BUNDLE = "dateLong";
+    private long DEFAULT_LONG = 0;
     @BindView(R.id.picker_meeting_date)
     TextView meetingDateTV;
     @BindView(R.id.picker_meeting_time)
@@ -77,18 +84,41 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private int done;
     private int age;
 
+
+    public boolean isChanged = false;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            isChanged = true;
+            return false;
+        }
+    };
+
     //Empty constructor;
     public MeetingFragment(){}
 
+    @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.meeting_edit_fragment, container, false);
         ButterKnife.bind(this,rootView);
         setHasOptionsMenu(true);
 
+        meetingDateTV.setOnTouchListener(mTouchListener);
+        meetingTitleEditText.setOnTouchListener(mTouchListener);
+        meetingTimeTV.setOnTouchListener(mTouchListener);
+        meetingPersonEditText.setOnTouchListener(mTouchListener);
+        meetingLocationEditText.setOnTouchListener(mTouchListener);
+
         roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
 
+        if(savedInstanceState != null){
+            if(eventId != DEFAULT_ID){
+                ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.edit_meeting));
+                }
+
+        }
         Bundle bundle = getArguments();
         if(bundle != null) {
             if (bundle.containsKey(EXTRA_EVENT)) {
@@ -98,7 +128,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
 
             }else {
                 eventId = bundle.getInt(EVENT_ENTITY_ID);
-
+                ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.add_meeting));
             }
 
         }
@@ -320,5 +350,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+    @Override
+    public boolean onBackPressed() {
+        return isChanged;
     }
 }

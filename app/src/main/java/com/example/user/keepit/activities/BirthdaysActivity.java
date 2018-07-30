@@ -25,6 +25,8 @@ import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +43,9 @@ public class BirthdaysActivity extends AppCompatActivity {
     RecyclerView birthdaysRecyclerView;
    @BindView(R.id.empty_birthday_list_textView)
    TextView emptyBirthdayListTV;
+   @BindView(R.id.birthday_adView)
+    AdView adView;
+
     private EventViewModel mViewModel;
     private AppRoomDatabase roomDB;
     private AppExecutors executors;
@@ -54,6 +59,12 @@ public class BirthdaysActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.birthday_name));
+
+        //load the adView
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        adView.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
