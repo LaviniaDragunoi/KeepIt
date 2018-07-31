@@ -96,9 +96,6 @@ public class WidgetService extends RemoteViewsService {
                 } else if (isChecked == 1) {
                     views.setImageViewResource(R.id.checked_TV, R.drawable.ic_done_accent);
                 }
-//                Intent checkedIntent = new Intent();
-
-             //   views.setOnClickPendingIntent(R.id.checked_TV, checkedPendingIntent);
                 views.setTextViewText(R.id.event_type_TV, todayEvents.get(position).getEventType());
                 views.setTextViewText(R.id.title_TV, todayEvents.get(position).getTitle());
                 views.setTextViewText(R.id.date_TV, todayEvents.get(position).getDateString());
@@ -113,6 +110,7 @@ public class WidgetService extends RemoteViewsService {
                 views.setViewVisibility(R.id.today_list_widget, View.INVISIBLE);
                 views.setViewVisibility(R.id.empty_today_widget, View.VISIBLE);
             }
+
             return views;
         }
 

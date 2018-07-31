@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.user.keepit.BuildConfig;
 import com.example.user.keepit.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseAnalytics mFirebaseAnalytics;
 @BindView(R.id.today_image)
     ImageView todaysLogo;
 @BindView(R.id.meetings_image)
@@ -57,6 +59,10 @@ ImageView notesLogo;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

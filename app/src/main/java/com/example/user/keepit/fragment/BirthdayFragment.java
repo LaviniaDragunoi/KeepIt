@@ -86,7 +86,7 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
             return false;
         }
     };
-
+    ;
 
     //Empty constructor;
     public BirthdayFragment() {

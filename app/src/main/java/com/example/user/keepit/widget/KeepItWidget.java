@@ -36,10 +36,11 @@ public class KeepItWidget extends AppWidgetProvider {
         Intent addIntent = new Intent(context, AddTodayActivity.class);
         PendingIntent addPendingIntent = PendingIntent.getActivity(context, 0, addIntent, 0);
         views.setOnClickPendingIntent(R.id.add_event_widget, addPendingIntent);
+
         Intent editIntent = new Intent(context, EditActivity.class);
-        //editIntent.putExtras()
-        PendingIntent editPendingIntent = PendingIntent.getActivity(context, 0, editIntent, 0);
-        views.setOnClickPendingIntent(R.id.edit_event, editPendingIntent);
+        PendingIntent pendingEditIntent = PendingIntent.getActivity(context, 0, editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.today_list_widget, pendingEditIntent);
+
         return views;
     }
 

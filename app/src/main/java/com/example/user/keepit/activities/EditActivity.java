@@ -40,7 +40,7 @@ public class EditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-       // Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         if(savedInstanceState == null) {
@@ -139,7 +139,7 @@ public class EditActivity extends AppCompatActivity {
             DialogInterface.OnClickListener discard = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
+                    recreate();
                     finish();
                 }
             };
@@ -156,6 +156,7 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if( dialog!=null ){
                     dialog.dismiss();
+
                 }
             }
         });
