@@ -320,23 +320,6 @@ public class BirthdayFragment extends Fragment implements MyDatePickerFragment.O
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    public static void showUnsavedDialog(DialogInterface.OnClickListener discardButtonClickListener){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.unsaved_changes_message);
-        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if( dialog!=null ){
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
 
     @Override
     public boolean onBackPressed() {
