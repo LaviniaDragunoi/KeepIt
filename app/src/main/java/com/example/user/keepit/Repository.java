@@ -7,15 +7,15 @@ import com.example.user.keepit.database.AppRoomDatabase;
 import com.example.user.keepit.database.EventDao;
 import com.example.user.keepit.database.EventEntity;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.fragment.BirthdayFragment.BIRTHDAY_TYPE;
-import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
-import static com.example.user.keepit.fragment.NoteFragment.NOTE_TYPE;
+import static com.example.user.keepit.utils.Constants.BIRTHDAY_TYPE;
+import static com.example.user.keepit.utils.Constants.MEETING_TYPE;
+import static com.example.user.keepit.utils.Constants.NOTE_TYPE;
 
+/**
+ * Repository class that will mediate the ViewModel and the RoomDb
+ */
 public class Repository {
     private static final Object LOCK = new Object();
     private static Repository sInstance;
@@ -23,7 +23,7 @@ public class Repository {
     private final EventDao mEventDao;
     private final AppExecutors mAppExecutors;
 
-    public Repository(AppExecutors appExecutors, AppRoomDatabase roomDB, EventDao eventDao){
+    public Repository(AppExecutors appExecutors, AppRoomDatabase roomDB, EventDao eventDao) {
         mAppExecutors = appExecutors;
         mRoomDB = roomDB;
         mEventDao = eventDao;
@@ -39,40 +39,10 @@ public class Repository {
         return sInstance;
     }
 
-    public LiveData<EventEntity> loadEvent(int id){
+    public LiveData<EventEntity> loadEvent(int id) {
         return mEventDao.loadEventById(id);
     }
 
-    public LiveData<List<EventEntity>> initializeEventsList(){
-        final MediatorLiveData<List<EventEntity>> mainEventsList = new MediatorLiveData<>();
-        LiveData<List<EventEntity>> eventsDb = mEventDao.loadAllEvents();
-        eventsDb.observeForever(eventEntities -> {
-            if(eventEntities != null && eventEntities.size() >0){
-                mAppExecutors.diskIO().execute(()->{
-
-                });
-            }else {
-                mainEventsList.setValue(null);
-            }
-        });
-        return mainEventsList;
-    }
-    private void addToDatabase() {
-        mEventDao.loadAllEvents();
-    }
-
-
-    //Clean up the database
-    private void deleteFromDb() {
-        mEventDao.deleteAll();
-    }
-
-    public void addEvent(EventEntity eventEntity){
-        mAppExecutors.diskIO().execute(()->{
-            mEventDao.insertEvent(eventEntity);
-
-        });
-    }
 
     public void insertNewEvent(EventEntity event) {
         mEventDao.insertEvent(event);
@@ -85,7 +55,6 @@ public class Repository {
                 mEventDao.updateEvent(event);
             }
         });
-
     }
 
     public LiveData<List<EventEntity>> getInitialEventsList() {
@@ -108,6 +77,7 @@ public class Repository {
     public LiveData<List<EventEntity>> getBirthdays() {
         return mEventDao.getEventsByEventType(BIRTHDAY_TYPE);
     }
+
     public List<EventEntity> getBirthdaysList() {
         return mEventDao.getEventsListByEventType(BIRTHDAY_TYPE);
     }
@@ -119,10 +89,12 @@ public class Repository {
     public List<EventEntity> getNotesList() {
         return mEventDao.getEventsListByEventType(NOTE_TYPE);
     }
+
     public List<EventEntity> getMeetingsList() {
 
         return mEventDao.getEventsListByEventType(MEETING_TYPE);
     }
+
     public void deleteEventById(int eventId) {
         EventEntity event = mEventDao.loadEventEntityById(eventId);
         mEventDao.deleteEvent(event);

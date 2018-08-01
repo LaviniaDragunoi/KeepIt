@@ -12,30 +12,42 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Solution for DatePicker found here:
+ * http://www.zoftino.com/android-datepicker-example
+ */
 public class MyDatePickerFragment extends DialogFragment {
 
     OnDatePickerSelected listener;
-    interface OnDatePickerSelected{
-        public void onDateSelected(Date date, String dateString);
-    }
-
-    public void setListener(OnDatePickerSelected listener){
-        this.listener = listener;
-    }
-
     public DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             @SuppressLint("DefaultLocale")
             Date date = getDateFromDatePicker(view);
             @SuppressLint("DefaultLocale") String pickedDate = (String.format("%02d/%02d/%04d",
-                    view.getDayOfMonth(), view.getMonth()+1, view.getYear()));
+                    view.getDayOfMonth(), view.getMonth() + 1, view.getYear()));
             listener.onDateSelected(date, pickedDate);
-
-
         }
     };
 
+    /**
+     * Get the date from DatePicker
+     *
+     * @param datePicker
+     * @return a java.util.Date
+     */
+    public static java.util.Date getDateFromDatePicker(DatePicker datePicker) {
+        int day = datePicker.getDayOfMonth();
+        int month = datePicker.getMonth();
+        int year = datePicker.getYear();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        return calendar.getTime();
+    }
+
+    public void setListener(OnDatePickerSelected listener) {
+        this.listener = listener;
+    }
 
     @NonNull
     @SuppressLint("NewApi")
@@ -48,21 +60,7 @@ public class MyDatePickerFragment extends DialogFragment {
         return new DatePickerDialog(Objects.requireNonNull(getActivity()), dateSetListener, year, month, day);
     }
 
-    /**
-     *
-     * @param datePicker
-     * @return a java.util.Date
-     */
-    public static java.util.Date getDateFromDatePicker(DatePicker datePicker){
-        int day = datePicker.getDayOfMonth();
-        int month = datePicker.getMonth();
-        int year =  datePicker.getYear();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
-
-        return calendar.getTime();
+    interface OnDatePickerSelected {
+        public void onDateSelected(Date date, String dateString);
     }
-
-
 }

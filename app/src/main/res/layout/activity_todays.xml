@@ -1,73 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    style="@style/MatchMatchStyle"
     android:background="@color/backgroundColor"
     tools:context=".activities.TodaysActivity">
 
     <TextView
         android:id="@+id/todays_date_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        tools:text="@string/date_title"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        style="@style/TextStyle"
         android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="@dimen/margin_eight"
+        android:layout_marginStart="@dimen/margin_eight"
+        android:layout_marginTop="@dimen/margin_top"
+        tools:text="@string/date_title" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/todays_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_alignBaseline="@id/todays_date_text_view"/>
+        style="@style/WMatchHWrapStyle"
+        android:layout_alignBaseline="@id/todays_date_text_view"
+        android:layout_marginBottom="@dimen/margin_eight"
+        android:layout_marginTop="@dimen/margin_eight" />
 
     <TextView
         android:id="@+id/empty_today_list_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/TextStyle"
         android:layout_centerInParent="true"
-        android:text="@string/empty_for_today"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="20sp"/>
+        android:text="@string/empty_for_today" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/WMatchHWrapStyle"
         android:layout_alignParentBottom="true">
-    <Button
-        android:id="@+id/previous_day_button"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:layout_height="wrap_content"
-        tools:text="@string/yesterday"
-        android:background="@color/backgroundColor"
-        android:elevation="8dp"
-        android:focusableInTouchMode="true"
-        tools:targetApi="lollipop"
-        android:drawableLeft="@drawable/ic_navigate_prev"
-        tools:ignore="ButtonStyle,RtlHardcoded" />
+
+        <Button
+            android:id="@+id/previous_day_button"
+            android:layout_width="@dimen/zero"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/backgroundColor"
+            android:drawableLeft="@drawable/ic_navigate_prev"
+            android:elevation="@dimen/elevation_button"
+            android:focusableInTouchMode="true"
+            tools:ignore="ButtonStyle,RtlHardcoded"
+            tools:targetApi="lollipop"
+            tools:text="@string/yesterday" />
+
         <Button
             android:id="@+id/next_day_button"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:drawableRight="@drawable/ic_navigate_next"
-            tools:text="@string/tomorrow"
+            android:layout_weight="1"
             android:background="@color/backgroundColor"
-            android:elevation="8dp"
+            android:drawableRight="@drawable/ic_navigate_next"
+            android:elevation="@dimen/elevation_button"
             android:focusableInTouchMode="true"
+            tools:ignore="ButtonStyle,RtlHardcoded"
             tools:targetApi="lollipop"
-            tools:ignore="ButtonStyle,RtlHardcoded" />
+            tools:text="@string/tomorrow" />
 
     </LinearLayout>
 

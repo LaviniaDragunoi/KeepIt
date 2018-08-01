@@ -11,7 +11,9 @@ import android.arch.persistence.room.Update;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ * Abstract class that contains methods to access the database
+ */
 @Dao
 public abstract class EventDao {
 
@@ -23,7 +25,6 @@ public abstract class EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertEvent(EventEntity eventEntity);
-
 
     @Query("SELECT * FROM events")
     public abstract LiveData<List<EventEntity>> loadAllEvents();

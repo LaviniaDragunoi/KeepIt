@@ -2,25 +2,20 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.MainActivity"
-    android:background="@color/backgroundColor">
-<android.support.v4.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-   <include
-       layout="@layout/main_grid_activity"/>
-</android.support.v4.widget.NestedScrollView>
-   <android.support.design.widget.FloatingActionButton
-       android:id="@+id/fab"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       app:fabSize="normal"
-       android:src="@drawable/ic_add_blue"
-       android:layout_margin="@dimen/margin"
-       android:layout_gravity="bottom|end"
-       android:elevation="8dp"
-       tools:targetApi="lollipop" />
-   <include layout="@layout/fab_layout" />
+    style="@style/MatchMatchStyle"
+    android:background="@color/backgroundColor"
+    tools:context=".activities.MainActivity">
+
+    <android.support.v4.widget.NestedScrollView style="@style/MatchMatchStyle">
+
+        <include layout="@layout/main_grid_activity" />
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FabStyle"
+        app:fabSize="normal"
+        tools:targetApi="lollipop" />
+
 </android.support.design.widget.CoordinatorLayout>

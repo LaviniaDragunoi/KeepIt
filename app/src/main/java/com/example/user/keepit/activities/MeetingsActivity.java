@@ -34,17 +34,20 @@ import com.google.android.gms.ads.AdView;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_MEETING;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.IS_MEETING;
 
-
+/**
+ * Class that will display the list of meetings entered by the user
+ * Divider solution found here:
+ * https://stackoverflow.com/questions/24618829/how-to-add-dividers-and-spaces-between-items-in-recyclerview
+ */
 public class MeetingsActivity extends AppCompatActivity {
+
     @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
     @BindView(R.id.empty_meeting_list_textView)
@@ -52,10 +55,7 @@ public class MeetingsActivity extends AppCompatActivity {
     @BindView(R.id.meetings_adView)
     AdView meetingAdVIew;
     private EventViewModel mViewModel;
-    private AppRoomDatabase roomDB;
     private AppExecutors executors;
-    private EventViewModelFactory factoryVM;
-    private Repository mRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,13 +80,14 @@ public class MeetingsActivity extends AppCompatActivity {
         meetingsRecyclerView.setLayoutManager(layoutManagerReviews);
 
         //Get the meetingList to set the adapter for
-        roomDB = AppRoomDatabase.getsInstance(this);
+        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
-        factoryVM = new EventViewModelFactory(mRepository);
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
         mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
-       updateTheList();
+        updateTheList();
     }
+
     private void updateTheList() {
         mViewModel.getMeetingsList().observe(this, new Observer<List<EventEntity>>() {
             @Override
@@ -101,7 +102,6 @@ public class MeetingsActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     //Inflating the menu bar
@@ -119,7 +119,7 @@ public class MeetingsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_delete_from_meetings:
                 //delete meetings list
-               showDeleteConfirmationDialog();
+                showDeleteConfirmationDialog();
                 return true;
             case R.id.action_add_from_meetings:
                 Intent intent = new Intent(this, EditActivity.class);
@@ -157,7 +157,6 @@ public class MeetingsActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteAllMeetings();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -179,14 +178,10 @@ public class MeetingsActivity extends AppCompatActivity {
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-
                 mViewModel.deleteAllMeetings();
                 updateTheList();
-
                 finish();
             }
         });
     }
-
-
 }

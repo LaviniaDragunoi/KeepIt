@@ -4,7 +4,6 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,18 +24,21 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.user.keepit.utils.Constants.EVENT_ANALYTICS_CONTENT;
+
 public class MainActivity extends AppCompatActivity {
-    private FirebaseAnalytics mFirebaseAnalytics;
-@BindView(R.id.today_image)
+
+    @BindView(R.id.today_image)
     ImageView todaysLogo;
-@BindView(R.id.meetings_image)
-ImageView meetingsLogo;
-@BindView(R.id.birthday_image)
-ImageView birthdaysLogo;
-@BindView(R.id.notes_image)
-ImageView notesLogo;
-@BindView(R.id.fab)
+    @BindView(R.id.meetings_image)
+    ImageView meetingsLogo;
+    @BindView(R.id.birthday_image)
+    ImageView birthdaysLogo;
+    @BindView(R.id.notes_image)
+    ImageView notesLogo;
+    @BindView(R.id.fab)
     FloatingActionButton fab;
+    private FirebaseAnalytics mFirebaseAnalytics;
     private Intent intent;
 
     //Method used for debugging Room Db purposes
@@ -50,7 +52,8 @@ ImageView notesLogo;
                 inMemoryDatabases.put("InMemoryOne.db", database[0]);
                 Method setRoomInMemoryDatabase = debugDB.getMethod("setInMemoryRoomDatabases", argTypes);
                 setRoomInMemoryDatabase.invoke(null, inMemoryDatabases);
-            } catch (Exception ignore) { }
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -60,8 +63,11 @@ ImageView notesLogo;
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        // Obtain the FirebaseAnalytics instance.
+        //logEvent for Analytics
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, EVENT_ANALYTICS_CONTENT);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +76,7 @@ ImageView notesLogo;
                 startActivity(intent);
             }
         });
+
         todaysLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,6 +84,7 @@ ImageView notesLogo;
                 startActivity(intent);
             }
         });
+
         meetingsLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +92,7 @@ ImageView notesLogo;
                 startActivity(intent);
             }
         });
+
         birthdaysLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,12 +120,13 @@ ImageView notesLogo;
         inflater.inflate(R.menu.home_menu, menu);
         return true;
     }
+
     //Creating option menu.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        int id =  item.getItemId();
-        if(id == R.id.about_app){
+        int id = item.getItemId();
+        if (id == R.id.about_app) {
             showAboutDialog();
         }
         return true;
@@ -131,7 +141,6 @@ ImageView notesLogo;
         builder.setPositiveButton(R.string.paid_version, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 Toast.makeText(MainActivity.this, "You are on paid version", Toast.LENGTH_LONG).show();
             }
         });

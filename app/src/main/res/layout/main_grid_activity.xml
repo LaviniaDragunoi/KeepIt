@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    style="@style/MatchMatchStyle"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/today_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="@dimen/main_image_dim"
+        android:layout_height="@dimen/main_image_dim"
+        android:layout_marginStart="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
         android:alpha="0.7"
         android:contentDescription="@string/app_name"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,23 +20,21 @@
 
     <TextView
         android:id="@+id/today_title"
-        android:layout_width="103dp"
-        android:layout_height="31dp"
+        style="@style/TextStyle"
         android:fontFamily="sans-serif"
         android:gravity="center"
         android:text="@string/todays_name"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="@dimen/text_sixteen"
         app:layout_constraintEnd_toEndOf="@+id/today_image"
         app:layout_constraintStart_toStartOf="@+id/today_image"
         app:layout_constraintTop_toBottomOf="@+id/today_image" />
 
     <ImageView
         android:id="@+id/birthday_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_margin="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="@dimen/main_image_dim"
+        android:layout_height="@dimen/main_image_dim"
+        android:layout_margin="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
         android:alpha="0.7"
         android:contentDescription="@string/app_name"
         app:layout_constraintBottom_creator="@+id/today_title"
@@ -51,26 +47,21 @@
 
     <TextView
         android:id="@+id/birthday_title"
-        android:layout_width="103dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:fontFamily="sans-serif"
+        style="@style/TextStyle"
         android:gravity="center"
-        android:text="Birthdays"
+        android:text="@string/birthday_name"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/birthday_image"
         app:layout_constraintStart_toStartOf="@+id/birthday_image"
         app:layout_constraintTop_toBottomOf="@+id/birthday_image" />
 
     <ImageView
         android:id="@+id/meetings_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_margin="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="@dimen/main_image_dim"
+        android:layout_height="@dimen/main_image_dim"
+        android:layout_margin="@dimen/margin_top"
+        android:layout_marginEnd="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
         android:alpha="0.7"
         android:contentDescription="@string/app_name"
         app:layout_constraintBottom_toTopOf="@+id/today_title"
@@ -81,15 +72,10 @@
 
     <TextView
         android:id="@+id/meetings_title"
-        android:layout_width="103dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:fontFamily="sans-serif"
+        style="@style/TextStyle"
         android:gravity="center"
-        android:text="Meetings"
+        android:text="@string/meetings_name"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/today_title"
         app:layout_constraintEnd_toEndOf="@+id/meetings_image"
         app:layout_constraintHorizontal_bias="0.516"
@@ -97,11 +83,12 @@
 
     <ImageView
         android:id="@+id/notes_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="@dimen/main_image_dim"
+        android:layout_height="@dimen/main_image_dim"
+        android:layout_marginStart="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
         android:alpha="0.7"
+        android:contentDescription="@string/notes_name"
         app:layout_constraintBottom_toBottomOf="@+id/birthday_image"
         app:layout_constraintEnd_toEndOf="@+id/meetings_image"
         app:layout_constraintHorizontal_bias="1.0"
@@ -112,16 +99,12 @@
 
     <TextView
         android:id="@+id/notes_title"
-        android:layout_width="103dp"
-        android:layout_height="31dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:fontFamily="sans-serif"
+        style="@style/TextStyle"
         android:gravity="center"
         android:text="@string/notes_name"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/birthday_title"
         app:layout_constraintEnd_toEndOf="@+id/notes_image"
         app:layout_constraintStart_toStartOf="@+id/notes_image" />
+
 </android.support.constraint.ConstraintLayout>

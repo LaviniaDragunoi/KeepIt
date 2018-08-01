@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/WMatchHWrapStyle"
     android:orientation="horizontal">
+
     <ImageView
         android:id="@+id/checked_TV"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="2"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        tools:src="@drawable/ic_check_box"/>
+        android:contentDescription="@string/checked_image"
+        tools:src="@drawable/ic_check_box" />
+
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="4"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/margin">
+        android:layout_margin="@dimen/margin"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/event_type_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Event type"
-            android:textSize="16sp"/>
+            style="@style/WrapWrapStyle"
+            android:textSize="@dimen/text_sixteen"
+            tools:text="@string/event_type" />
+
         <TextView
             android:id="@+id/title_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Name"
-            android:textSize="16sp"/>
+            style="@style/WrapWrapStyle"
+            android:textSize="@dimen/text_sixteen"
+            tools:text="@string/name" />
+
         <TextView
             android:id="@+id/date_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Date"
-            android:textSize="16sp"/>
+            style="@style/WrapWrapStyle"
+            android:textSize="@dimen/text_sixteen"
+            tools:text="@string/date" />
 
         <TextView
             android:id="@+id/person_name_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="PersonName"
-            android:textSize="16sp"/>
+            style="@style/WrapWrapStyle"
+            android:textSize="@dimen/text_sixteen"
+            tools:text="@string/person_name" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/edit_event"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_margin="@dimen/margin"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_edit"
-        android:contentDescription="@string/notes_name" />
+        android:layout_margin="@dimen/margin"
+        android:layout_weight="1"
+        android:contentDescription="@string/notes_name"
+        android:src="@drawable/ic_edit" />
 
 </LinearLayout>

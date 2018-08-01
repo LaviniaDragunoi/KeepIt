@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -10,5 +10,43 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
+    <!--MatchMatch style-->
+    <style name="MatchMatchStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <!--WMatchHWrap style-->
+    <style name="WMatchHWrapStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <!--WrapWrap style-->
+    <style name="WrapWrapStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
+    <style name="AddBttnsStyle" parent="WMatchHWrapStyle">
+        <item name="android:layout_marginTop">@dimen/buttons_margin</item>
+        <item name="android:background">@color/backgroundColor</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/elevation_button</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="TextStyle" parent="WrapWrapStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/text_size</item>
+    </style>
+
+    <style name="FabStyle" parent="WrapWrapStyle">
+        <item name="android:src">@drawable/ic_add_blue</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/elevation_button</item>
+    </style>
 </resources>

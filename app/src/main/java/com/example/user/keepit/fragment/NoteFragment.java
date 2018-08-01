@@ -40,12 +40,14 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
+import static com.example.user.keepit.utils.Constants.NOTE_TYPE;
 
-public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, IOnBackPressed{
+public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, IOnBackPressed {
 
+    public boolean isChanged = false;
     @BindView(R.id.picker_note_deadline)
     TextView noteDeadlineTextView;
     @BindView(R.id.note_name_title)
@@ -54,77 +56,57 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     EditText noteTextEditText;
     private Date noteDeadlineDate;
     private String noteDeadlineString;
-
-    public static final String NOTE_TYPE = "Note";
-
-    private AppRoomDatabase roomDb;
     private EditEventViewModel mViewModel;
     private AppExecutors executors;
     private int eventId;
-    private Repository mRepository;
     private EditEventModelFactory factory;
-    private EventEntity currentEvent;
-
-    private String eventType;
-    private String title;
-    private Date date;
-    private String dateString;
-    private String time;
-    private String personName;
-    private String location;
-    private String note;
-    private int done;
-    private int age;
-    public boolean isChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             isChanged = true;
             return false;
         }
     };
+
     //Empty constructor;
-    public NoteFragment(){}
+    public NoteFragment() {
+    }
 
     @SuppressLint("ClickableViewAccessibility")
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.note_edit_fragment, container, false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
         noteTitleEditText.setOnTouchListener(mTouchListener);
         noteDeadlineTextView.setOnTouchListener(mTouchListener);
         noteTextEditText.setOnTouchListener(mTouchListener);
-        roomDb = AppRoomDatabase.getsInstance(getContext());
+        AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
-        if(savedInstanceState != null){
-            if(eventId != DEFAULT_ID){
+        Repository mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+
+        if (savedInstanceState != null) {
+            if (eventId != DEFAULT_ID) {
                 ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.edit_note));
             }
-
         }
         Bundle bundle = getArguments();
-        if(bundle != null) {
+        if (bundle != null) {
             if (bundle.containsKey(EXTRA_EVENT)) {
-                currentEvent = bundle.getParcelable(EXTRA_EVENT);
-                eventId = currentEvent.getId();
+                EventEntity currentEvent = bundle.getParcelable(EXTRA_EVENT);
+                eventId = Objects.requireNonNull(currentEvent).getId();
                 populateUI(currentEvent);
 
-            }else {
+            } else {
                 eventId = bundle.getInt(EVENT_ENTITY_ID);
                 ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.add_note));
-
-
             }
-
         }
 
         factory = new EditEventModelFactory(mRepository, eventId);
-
         updateTheList();
         showPickerSelected();
-
         return rootView;
     }
 
@@ -134,7 +116,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
             @Override
             public void onChanged(@Nullable EventEntity eventEntity) {
                 mViewModel.getEvent().removeObserver(this);
-
             }
         });
     }
@@ -144,7 +125,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
             @Override
             public void onClick(View v) {
                 showDatePicker(v);
-
             }
         });
     }
@@ -160,7 +140,7 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
     public void showDatePicker(View v) {
         MyDatePickerFragment newFragment = new MyDatePickerFragment();
         newFragment.setListener(this);
-        newFragment.show(getFragmentManager(), "date picker");
+        newFragment.show(Objects.requireNonNull(getFragmentManager()), "date picker");
     }
 
     @Override
@@ -170,7 +150,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         noteDeadlineTextView.setText(dateString);
     }
 
-
     //Inflating the menu bar
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -178,13 +157,13 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void createSharingText(String deadlineString, String noteText){
+    private void createSharingText(String deadlineString, String noteText) {
         String mimeType = "text/plain";
         String title = "Note";
         String message = "This note has it's deadline on " + deadlineString + " \n" + noteText;
         ShareCompat.IntentBuilder
                 /* The from method specifies the Context from which this share is coming from */
-                .from(getActivity())
+                .from(Objects.requireNonNull(getActivity()))
                 .setType(mimeType)
                 .setChooserTitle(title)
                 .setText(message)
@@ -216,12 +195,11 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                if(eventId == DEFAULT_ID) {
+                if (eventId == DEFAULT_ID) {
                     noteTitleEditText.setText("");
                     noteDeadlineTextView.setText("");
                     noteTextEditText.setText("");
-
-                }else {
+                } else {
                     mViewModel.deleteEvent(eventId);
                     updateTheList();
                 }
@@ -229,7 +207,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
             }
         });
     }
-
 
     private void showDeleteDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -240,7 +217,6 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteNote();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -257,34 +233,32 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
     private void saveNote() {
-        eventType = NOTE_TYPE;
-        title = noteTitleEditText.getText().toString();
-        date = noteDeadlineDate;
-        dateString = noteDeadlineString;
-        time = "";
-        personName = "";
-        location = "";
-        note = noteTextEditText.getText().toString();
-        done = 0;
-        age = 0;
-        EventEntity noteEvent = new EventEntity(eventType, title, date, dateString, time,
+        String title = noteTitleEditText.getText().toString();
+        Date date = noteDeadlineDate;
+        String dateString = noteDeadlineString;
+        String time = "";
+        String personName = "";
+        String location = "";
+        String note = noteTextEditText.getText().toString();
+        int done = 0;
+        int age = 0;
+        EventEntity noteEvent = new EventEntity(NOTE_TYPE, title, date, dateString, time,
                 personName, location, note, done, age);
 
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                if(eventId == DEFAULT_ID) {
+                if (eventId == DEFAULT_ID) {
                     mViewModel.addEvent(noteEvent);
-
-                }else {
+                } else {
                     noteEvent.setId(eventId);
                     mViewModel.updateEvent(noteEvent);
                 }
                 Objects.requireNonNull(getActivity()).finish();
             }
         });
-
     }
 
     @Override

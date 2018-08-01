@@ -38,18 +38,15 @@ public class KeepItWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.add_event_widget, addPendingIntent);
 
         Intent editIntent = new Intent(context, EditActivity.class);
-        PendingIntent pendingEditIntent = PendingIntent.getActivity(context, 0, editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingEditIntent = PendingIntent.getActivity(context, 0,
+                editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.today_list_widget, pendingEditIntent);
-
         return views;
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-
-
         for (int appWidgetId : appWidgetIds) {
-
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }

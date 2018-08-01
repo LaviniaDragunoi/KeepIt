@@ -1,13 +1,9 @@
 package com.example.user.keepit.adapters;
 
-import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,44 +19,35 @@ import com.example.user.keepit.database.EventEntity;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static java.lang.String.valueOf;
+import static com.example.user.keepit.utils.Constants.EVENT_DONE;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_NOT_DONE;
+import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
-    private static final String LOG_TAG = ListAdapter.class.getSimpleName();
-    public static final String EXTRA_EVENT = "currentEvent";
-    public static final String EXTRA_EVENT_ID = "eventId";
-    public static final String EVENT_TYPE = "eventType";
-    private static final int EVENT_DONE = 1;
-    private static final int EVENT_NOT_DONE = 0;
     private List<EventEntity> eventsList;
     private Context mContext;
     private EditEventViewModel viewModel;
-    private AppRoomDatabase roomDb;
-    private AppExecutors executors;
     private Repository mRepository;
     private EditEventModelFactory factory;
 
-    public ListAdapter(Context context, List<EventEntity> eventsList){
+    public ListAdapter(Context context, List<EventEntity> eventsList) {
         this.mContext = context;
         this.eventsList = eventsList;
     }
 
-    private void initializeACC(){
-        roomDb = AppRoomDatabase.getsInstance(mContext);
-        executors = AppExecutors.getInstance();
+    private void initializeACC() {
+        AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(mContext);
+        AppExecutors executors = AppExecutors.getInstance();
         mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
-
     }
+
     @NonNull
     @Override
     public ListAdapter.ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -75,9 +62,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
         ImageView checkedImageView = holder.checkedTV;
         int isDone = eventEntity.getDone();
-        if(isDone == EVENT_NOT_DONE){
+        if (isDone == EVENT_NOT_DONE) {
             checkedImageView.setImageResource(R.drawable.ic_check_box);
-        }else if(isDone == EVENT_DONE){
+        } else if (isDone == EVENT_DONE) {
             checkedImageView.setImageResource(R.drawable.ic_done_accent);
         }
         TextView eventTypeTextView = holder.eventTypeTV;
@@ -112,24 +99,28 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         checkedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isDone == EVENT_NOT_DONE){
+                if (isDone == EVENT_NOT_DONE) {
                     eventEntity.setDone(EVENT_DONE);
                     checkedImageView.setImageResource(R.drawable.ic_done_accent);
                     mRepository.updateExistingEvent(eventEntity);
-                }else if(isDone == EVENT_DONE){
+                } else if (isDone == EVENT_DONE) {
                     eventEntity.setDone(EVENT_NOT_DONE);
                     checkedImageView.setImageResource(R.drawable.ic_check_box);
                     mRepository.updateExistingEvent(eventEntity);
                 }
             }
         });
-
     }
 
     @Override
     public int getItemCount() {
-        if(eventsList == null) return 0;
+        if (eventsList == null) return 0;
         return eventsList.size();
+    }
+
+    public void setEvent(List<EventEntity> events) {
+        eventsList = events;
+        notifyDataSetChanged();
     }
 
     public class ListViewHolder extends RecyclerView.ViewHolder {
@@ -151,11 +142,4 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             ButterKnife.bind(this, itemView);
         }
     }
-
-    public void setEvent(List<EventEntity> events){
-        eventsList = events;
-        notifyDataSetChanged();
-    }
-
-
 }

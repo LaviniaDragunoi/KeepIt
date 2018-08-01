@@ -1,22 +1,33 @@
 package com.example.user.keepit.database;
-import android.app.Activity;
+
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * EventEntity is stored in RoomDb
+ */
 @Entity(tableName = "events")
-public class EventEntity implements Parcelable{
+public class EventEntity implements Parcelable {
 
+    public static final Creator<EventEntity> CREATOR = new Creator<EventEntity>() {
+        @Override
+        public EventEntity createFromParcel(Parcel in) {
+            return new EventEntity(in);
+        }
+
+        @Override
+        public EventEntity[] newArray(int size) {
+            return new EventEntity[size];
+        }
+    };
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     @ColumnInfo(name = "eventType")
     private String eventType;
     private String title;
@@ -32,7 +43,7 @@ public class EventEntity implements Parcelable{
     private int age;
 
     public EventEntity(int id, String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note, int done, int age){
+                       String location, String note, int done, int age) {
         this.id = id;
         this.eventType = eventType;
         this.title = title;
@@ -44,11 +55,11 @@ public class EventEntity implements Parcelable{
         this.note = note;
         this.done = done;
         this.age = age;
-
     }
+
     @Ignore
     public EventEntity(String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note, int done, int age){
+                       String location, String note, int done, int age) {
         this.id = id;
         this.eventType = eventType;
         this.title = title;
@@ -61,7 +72,6 @@ public class EventEntity implements Parcelable{
         this.done = done;
         this.age = age;
     }
-
 
     protected EventEntity(Parcel in) {
         id = in.readInt();
@@ -74,20 +84,7 @@ public class EventEntity implements Parcelable{
         note = in.readString();
         done = in.readInt();
         age = in.readInt();
-
     }
-
-    public static final Creator<EventEntity> CREATOR = new Creator<EventEntity>() {
-        @Override
-        public EventEntity createFromParcel(Parcel in) {
-            return new EventEntity(in);
-        }
-
-        @Override
-        public EventEntity[] newArray(int size) {
-            return new EventEntity[size];
-        }
-    };
 
     public int getId() {
         return id;

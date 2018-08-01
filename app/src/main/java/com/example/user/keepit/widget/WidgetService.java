@@ -3,14 +3,10 @@ package com.example.user.keepit.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
@@ -23,12 +19,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
-import static java.lang.String.valueOf;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
 
 /**
  * Widget service and RemoteViewFactory that will create views for the widget
@@ -51,7 +44,6 @@ public class WidgetService extends RemoteViewsService {
         Repository repository = Repository.getsInstance(executors,
                 roomDB, roomDB.eventDao());
         todayEvents = repository.getTodaysEventsList(dateString);
-
     }
 
     private class KeepItRemoteViewFactory implements RemoteViewsFactory {
@@ -88,7 +80,7 @@ public class WidgetService extends RemoteViewsService {
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(mContext.getPackageName(),
                     R.layout.event_item);
-            if(todayEvents != null) {
+            if (todayEvents != null) {
                 views.setViewVisibility(R.id.today_list_widget, View.INVISIBLE);
                 int isChecked = todayEvents.get(position).getDone();
                 if (isChecked == 0) {
@@ -106,7 +98,7 @@ public class WidgetService extends RemoteViewsService {
                 Intent fillInIntent = new Intent();
                 fillInIntent.putExtras(bundle);
                 views.setOnClickFillInIntent(R.id.edit_event, fillInIntent);
-            }else {
+            } else {
                 views.setViewVisibility(R.id.today_list_widget, View.INVISIBLE);
                 views.setViewVisibility(R.id.empty_today_widget, View.VISIBLE);
             }

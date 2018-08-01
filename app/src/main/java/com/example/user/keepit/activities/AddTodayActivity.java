@@ -13,27 +13,31 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.provider.CalendarContract.Instances.EVENT_ID;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.IS_BIRTHDAY;
+import static com.example.user.keepit.utils.Constants.IS_MEETING;
+import static com.example.user.keepit.utils.Constants.IS_NOTE;
 
+/**
+ * Class that has buttons to add events ( Meetings, Birthdays, Notes)
+ */
 public class AddTodayActivity extends AppCompatActivity {
 
     @BindView(R.id.meeting_button)
     Button addMeetingButton;
-    public final static int DEFAULT_ID = -1;
     @BindView(R.id.birthday_button)
     Button addBirthdayButton;
     @BindView(R.id.note_button)
     Button addNoteButton;
-    public static final String IS_MEETING = "Meeting";
-    public static final String IS_BIRTHDAY = "Birthday";
-    public static final String IS_NOTE = "Note";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_today);
         ButterKnife.bind(this);
+
         setTitle(R.string.add_today);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
@@ -46,6 +50,7 @@ public class AddTodayActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         addBirthdayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +60,7 @@ public class AddTodayActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

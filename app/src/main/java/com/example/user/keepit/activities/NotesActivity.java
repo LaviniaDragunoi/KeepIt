@@ -36,11 +36,16 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_NOTE;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.IS_NOTE;
 
+
+/**
+ * Class that will display the list of note entered by the user
+ */
 public class NotesActivity extends AppCompatActivity {
+
     @BindView(R.id.notes_recycler_view)
     RecyclerView notesRecyclerView;
     @BindView(R.id.empty_note_list_textView)
@@ -49,13 +54,11 @@ public class NotesActivity extends AppCompatActivity {
     AdView notesAdView;
 
     private EventViewModel mViewModel;
-    private AppRoomDatabase roomDB;
     private AppExecutors executors;
-    private EventViewModelFactory factoryVM;
-    private Repository mRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
         ButterKnife.bind(this);
@@ -69,38 +72,38 @@ public class NotesActivity extends AppCompatActivity {
         notesAdView.loadAd(adRequest);
 
         //customize the recyclerView appearance
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
         notesRecyclerView.addItemDecoration(itemDecoration);
         RecyclerView.LayoutManager layoutManagerReviews = new
                 LinearLayoutManager(this);
-       notesRecyclerView.setLayoutManager(layoutManagerReviews);
+        notesRecyclerView.setLayoutManager(layoutManagerReviews);
 
-       //Get the notesList to set the adapter for
-        roomDB = AppRoomDatabase.getsInstance(this);
+        //Get the notesList to set the adapter for
+        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors,roomDB, roomDB.eventDao());
-        factoryVM = new EventViewModelFactory(mRepository);
-        mViewModel = ViewModelProviders.of(this,factoryVM).get(EventViewModel.class);
-       updateTheList();
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
+        mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
+        updateTheList();
     }
 
     private void updateTheList() {
         mViewModel.getNotesList().observe(this, new Observer<List<EventEntity>>() {
             @Override
             public void onChanged(@Nullable List<EventEntity> eventEntityList) {
-                if(eventEntityList != null && eventEntityList.size() > 0){
+                if (eventEntityList != null && eventEntityList.size() > 0) {
                     notesRecyclerView.setAdapter(new ListAdapter(NotesActivity.this, eventEntityList));
                     notesRecyclerView.setVisibility(View.VISIBLE);
                     emptyNotesListTV.setVisibility(View.INVISIBLE);
-                }else if(eventEntityList == null){
+                } else if (eventEntityList == null) {
                     notesRecyclerView.setVisibility(View.INVISIBLE);
                     emptyNotesListTV.setVisibility(View.VISIBLE);
                 }
             }
         });
     }
-
 
     //Inflating the menu bar
     @Override
@@ -145,6 +148,7 @@ public class NotesActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
@@ -154,7 +158,6 @@ public class NotesActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteAllNotes();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -176,10 +179,8 @@ public class NotesActivity extends AppCompatActivity {
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-
                 mViewModel.deleteAllNotes();
                 updateTheList();
-
                 finish();
             }
         });

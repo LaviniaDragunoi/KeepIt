@@ -6,16 +6,18 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
+/**
+ * Abstract class for RoomDatabase
+ * https://classroom.udacity.com/nanodegrees/nd801/
+ */
 @Database(entities = {EventEntity.class},
         version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppRoomDatabase extends RoomDatabase {
 
-    private static final Object LOCK = new Object();
     public static final String DATABASE_NAME = "events";
+    private static final Object LOCK = new Object();
     private static Builder<AppRoomDatabase> sInstance;
-    public abstract EventDao eventDao();
-
 
     public static AppRoomDatabase getsInstance(Context context) {
         if (sInstance == null) {
@@ -27,5 +29,5 @@ public abstract class AppRoomDatabase extends RoomDatabase {
         return sInstance.build();
     }
 
-
+    public abstract EventDao eventDao();
 }

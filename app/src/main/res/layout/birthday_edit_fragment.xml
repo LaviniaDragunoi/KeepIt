@@ -1,83 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchMatchStyle">
+
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        style="@style/MatchMatchStyle"
         android:alpha="0.2"
-        android:src="@drawable/birthday"
-        android:contentDescription="@string/birthday_name" />
+        android:contentDescription="@string/birthday_name"
+        android:src="@drawable/birthday" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/margin">
+        style="@style/MatchMatchStyle"
+        android:layout_marginTop="@dimen/margin"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin"
+            style="@style/WrapWrapStyle"
+            android:layout_marginStart="@dimen/margin"
             android:orientation="horizontal">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/person_title"/>
+                style="@style/WrapWrapStyle"
+                android:text="@string/person_title" />
+
             <EditText
                 android:id="@+id/birthday_person_name"
-                android:layout_marginLeft="@dimen/margin"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/add_person_name" />
+                style="@style/WrapWrapStyle"
+                android:layout_marginStart="@dimen/margin"
+                android:hint="@string/add_person_name"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorPrimaryDark" />
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/WrapWrapStyle"
             android:layout_margin="@dimen/margin"
             android:orientation="horizontal">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/birthday_name"/>
+                style="@style/WrapWrapStyle"
+                android:text="@string/birthday_name" />
+
             <TextView
                 android:id="@+id/picker_birth_date"
-                android:layout_marginLeft="@dimen/margin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WrapWrapStyle"
+                android:layout_marginStart="@dimen/margin"
                 android:hint="@string/date_pattern" />
 
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/WrapWrapStyle"
             android:layout_margin="@dimen/margin"
             android:orientation="horizontal">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/age"/>
+                style="@style/WrapWrapStyle"
+                android:text="@string/age" />
+
             <TextView
                 android:id="@+id/person_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin"
-                android:hint="@string/age"/>
+                style="@style/WrapWrapStyle"
+                android:layout_marginStart="@dimen/margin"
+                android:hint="@string/age" />
 
         </LinearLayout>
 
-            <TextView
-                android:id="@+id/send_message_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/send_message"
-                android:layout_margin="@dimen/margin"
-                android:drawablePadding="@dimen/margin"
-                android:drawableRight="@drawable/ic_mail"/>
+        <TextView
+            android:id="@+id/send_message_tv"
+            style="@style/WrapWrapStyle"
+            android:layout_margin="@dimen/margin"
+            android:drawableEnd="@drawable/ic_mail"
+            android:drawablePadding="@dimen/margin"
+            android:text="@string/send_message" />
 
     </LinearLayout>
 

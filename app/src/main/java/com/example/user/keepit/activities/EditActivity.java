@@ -18,23 +18,20 @@ import com.example.user.keepit.fragment.NoteFragment;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_BIRTHDAY;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_MEETING;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_NOTE;
-import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
-import static com.example.user.keepit.fragment.BirthdayFragment.BIRTHDAY_TYPE;
-import static com.example.user.keepit.fragment.MeetingFragment.MEETING_TYPE;
-import static com.example.user.keepit.fragment.NoteFragment.NOTE_TYPE;
+import static com.example.user.keepit.utils.Constants.BIRTHDAY_TYPE;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
+import static com.example.user.keepit.utils.Constants.IS_BIRTHDAY;
+import static com.example.user.keepit.utils.Constants.IS_MEETING;
+import static com.example.user.keepit.utils.Constants.IS_NOTE;
+import static com.example.user.keepit.utils.Constants.MEETING_TYPE;
+import static com.example.user.keepit.utils.Constants.NOTE_TYPE;
 
+/**
+ * Activity that will store fragments to add and edit events
+ */
 public class EditActivity extends AppCompatActivity {
-
-    public static final String EVENT_ENTITY_ID = "id";
-    private int id = DEFAULT_ID;
-    private EventEntity currentEvent;
-    public interface OnBackPressed {
-        void onBackPressed();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +40,11 @@ public class EditActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
-        if(savedInstanceState == null) {
+        //the fragment will be created only if the saveInstanceSTate will be null
+        if (savedInstanceState == null) {
             if (intent != null) {
                 if (intent.hasExtra(EVENT_ENTITY_ID)) {
-                    id = intent.getIntExtra(EVENT_ENTITY_ID, DEFAULT_ID);
+                    int id = intent.getIntExtra(EVENT_ENTITY_ID, DEFAULT_ID);
                     if (id == DEFAULT_ID) {
                         if (intent.hasExtra(IS_MEETING)) {
                             setTitle(R.string.add_meeting);
@@ -77,11 +75,11 @@ public class EditActivity extends AppCompatActivity {
                                     .commit();
                         }
                     } else if (intent.hasExtra(EXTRA_EVENT)) {
-                        currentEvent = intent.getParcelableExtra(EXTRA_EVENT);
+                        EventEntity currentEvent = intent.getParcelableExtra(EXTRA_EVENT);
                         String eventType = currentEvent.getEventType();
                         switch (eventType) {
                             case MEETING_TYPE: {
-                               setTitle(R.string.edit_meeting);
+                                setTitle(R.string.edit_meeting);
                                 MeetingFragment addMeetingFragment = new MeetingFragment();
                                 Bundle bundle = new Bundle();
                                 bundle.putInt(EVENT_ENTITY_ID, id);
@@ -127,6 +125,14 @@ public class EditActivity extends AppCompatActivity {
     public void setActionBarTitle(String title) {
         Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
+
+    /**
+     * Method that will help to pop up a dialog box and tell the user that some changes were made on the event
+     * the solution was found on:
+     * https://stackoverflow.com/questions/5448653/how-to-implement-onbackpressed-in-fragments#46425415
+     * and here:
+     * https://medium.com/@Wingnut/onbackpressed-for-fragments-357b2bf1ce8e
+     */
     @Override
     public void onBackPressed() {
 
@@ -147,14 +153,14 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    public void showUnsavedDialog(DialogInterface.OnClickListener discardButtonClickListener){
+    public void showUnsavedDialog(DialogInterface.OnClickListener discardButtonClickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_message);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if( dialog!=null ){
+                if (dialog != null) {
                     dialog.dismiss();
 
                 }
@@ -163,5 +169,9 @@ public class EditActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    public interface OnBackPressed {
+        void onBackPressed();
     }
 }

@@ -35,11 +35,12 @@
     <string name="add_person_name">Add her/his name</string>
     <string name="title_of_the_meeting">Meeting\'s name</string>
     <string name="add_title">Add title</string>
-    <string name="meetings_location">Location</string>
+    <string name="meetings_location">Show location</string>
     <string name="add_location">Add location</string>
     <string name="date_pattern">DD/MM/YYYY</string>
     <string name="save">Save</string>
     <string name="share">Share</string>
+    <string name="checked_image">Checked Icon</string>
     <string name="age">Age</string>
     <string name="send_message">Send message</string>
     <string name="title_of_the_note">Note title</string>
@@ -54,4 +55,8 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="ads">"ca-app-pub-3940256099942544/6300978111"</string>
+    <string name="event_type">Event Type</string>
+    <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="person_name">Person Name</string>
 </resources>

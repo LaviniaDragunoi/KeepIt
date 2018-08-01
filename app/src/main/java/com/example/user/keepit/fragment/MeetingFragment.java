@@ -37,16 +37,15 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static com.example.user.keepit.adapters.ListAdapter.EXTRA_EVENT;
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
+import static com.example.user.keepit.utils.Constants.MEETING_TYPE;
 
-public class MeetingFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected, MyTimePickerFragment.OnTimePickerSelected, IOnBackPressed{
+public class MeetingFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected,
+        MyTimePickerFragment.OnTimePickerSelected, IOnBackPressed {
 
-
-    private static final String TIME_BUNDLE = "meetingTime";
-    private static final String DATE_BUNDLE = "dateLong";
-    private long DEFAULT_LONG = 0;
+    public boolean isChanged = false;
     @BindView(R.id.picker_meeting_date)
     TextView meetingDateTV;
     @BindView(R.id.picker_meeting_time)
@@ -62,31 +61,12 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private Date meetingDateDate;
     private String meetingDateString;
     private String meetingTimeString;
-
-    private AppRoomDatabase roomDb;
     private EditEventViewModel mViewModel;
     private AppExecutors executors;
     private int eventId;
-    private Repository mRepository;
     private EditEventModelFactory factory;
-    private EventEntity currentEvent;
-
-    public static final String MEETING_TYPE = "Meeting";
-
-    private String eventType;
-    private String title;
-    private Date date;
-    private String dateString;
-    private String time;
-    private String personName;
-    private String location;
-    private String note;
-    private int done;
-    private int age;
-
-
-    public boolean isChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             isChanged = true;
@@ -95,12 +75,13 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     };
 
     //Empty constructor;
-    public MeetingFragment(){}
+    public MeetingFragment() {
+    }
 
     @SuppressLint("ClickableViewAccessibility")
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.meeting_edit_fragment, container, false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
         meetingDateTV.setOnTouchListener(mTouchListener);
@@ -109,40 +90,37 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         meetingPersonEditText.setOnTouchListener(mTouchListener);
         meetingLocationEditText.setOnTouchListener(mTouchListener);
 
-        roomDb = AppRoomDatabase.getsInstance(getContext());
+        AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(getContext());
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors,roomDb,roomDb.eventDao());
+        Repository mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
 
-        if(savedInstanceState != null){
-            if(eventId != DEFAULT_ID){
+        if (savedInstanceState != null) {
+            if (eventId != DEFAULT_ID) {
                 ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.edit_meeting));
-                }
-
+            }
         }
         Bundle bundle = getArguments();
-        if(bundle != null) {
+        if (bundle != null) {
             if (bundle.containsKey(EXTRA_EVENT)) {
-                currentEvent = bundle.getParcelable(EXTRA_EVENT);
-                eventId = currentEvent.getId();
+                EventEntity currentEvent = bundle.getParcelable(EXTRA_EVENT);
+                eventId = Objects.requireNonNull(currentEvent).getId();
                 populateUI(currentEvent);
-
-            }else {
+            } else {
                 eventId = bundle.getInt(EVENT_ENTITY_ID);
                 ((EditActivity) Objects.requireNonNull(getActivity())).setActionBarTitle(getString(R.string.add_meeting));
             }
-
         }
 
         factory = new EditEventModelFactory(mRepository, eventId);
         updateTheList();
-       showPickerSelected();
+        showPickerSelected();
 
-       showLocationTextView.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               showLocationOnMap(meetingLocationEditText.getText().toString());
-           }
-       });
+        showLocationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLocationOnMap(meetingLocationEditText.getText().toString());
+            }
+        });
         return rootView;
     }
 
@@ -152,7 +130,6 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             @Override
             public void onChanged(@Nullable EventEntity eventEntity) {
                 mViewModel.getEvent().removeObserver(this);
-
             }
         });
     }
@@ -166,11 +143,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         meetingTimeTV.setText(meetingTimeString);
         meetingPersonEditText.setText(eventEntity.getPersonName());
         meetingLocationEditText.setText(eventEntity.getLocation());
-
-
     }
 
-    private void showPickerSelected(){
+    private void showPickerSelected() {
         meetingDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,21 +160,17 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             }
         });
     }
+
     public void showDatePicker(View v) {
         MyDatePickerFragment newFragment = new MyDatePickerFragment();
         newFragment.setListener(this);
-        newFragment.show(getFragmentManager(), "date picker");
+        newFragment.show(Objects.requireNonNull(getFragmentManager()), "date picker");
     }
 
-    /**
-     *
-     * @param v
-     */
     public void showTimePickerDialog(View v) {
         MyTimePickerFragment newFragment = new MyTimePickerFragment();
         newFragment.setListener(this);
-        newFragment.show(getFragmentManager(), "time picker");
-
+        newFragment.show(Objects.requireNonNull(getFragmentManager()), "time picker");
     }
 
     @Override
@@ -222,21 +193,20 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void showLocationOnMap(String location){
+    private void showLocationOnMap(String location) {
         //get the location to String
         location = meetingLocationEditText.getText().toString();
         //build the address Uri
         Uri locationUri = new Uri.Builder()
                 .scheme("geo")
                 .path("0,0")
-                .appendQueryParameter("q",location)
+                .appendQueryParameter("q", location)
                 .build();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(locationUri);
-        if(intent.resolveActivity(getActivity().getPackageManager()) != null){
+        if (intent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             startActivity(intent);
         }
-
     }
 
     //Creating Intents for each menu item.
@@ -252,10 +222,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
                 saveMeeting();
                 return true;
             case R.id.action_share:
-               //share meeting
+                //share meeting
                 String name = meetingPersonEditText.getText().toString();
                 String locationMeeting = meetingLocationEditText.getText().toString();
-
                 createSharingText(name, meetingDateString, meetingTimeString, locationMeeting);
                 return true;
             default:
@@ -263,13 +232,13 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         }
     }
 
-    private void createSharingText(String personName, String dateString, String time, String location){
+    private void createSharingText(String personName, String dateString, String time, String location) {
         String mimeType = "text/plain";
         String title = "Meeting";
         String message = personName + " ,please don't forget of our meeting schedule on " + dateString + " at " + time;
         ShareCompat.IntentBuilder
                 /* The from method specifies the Context from which this share is coming from */
-                .from(getActivity())
+                .from(Objects.requireNonNull(getActivity()))
                 .setType(mimeType)
                 .setChooserTitle(title)
                 .setText(message)
@@ -277,46 +246,42 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     }
 
     private void saveMeeting() {
-            eventType = MEETING_TYPE;
-            title = meetingTitleEditText.getText().toString();
-            date = meetingDateDate;
-            dateString = meetingDateString;
-            time = meetingTimeString;
-            personName = meetingPersonEditText.getText().toString();
-            location = meetingLocationEditText.getText().toString();
-            note = " ";
-            done = 0;
-            age = 0;
-            EventEntity meeting = new EventEntity(eventType, title, date, dateString, time,
-                    personName, location, note, done, age);
-
-            executors.diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    if(eventId == DEFAULT_ID) {
-                        mViewModel.addEvent(meeting);
-
-                    }else {
-                        meeting.setId(eventId);
-                        mViewModel.updateEvent(meeting);
-                    }
-                    Objects.requireNonNull(getActivity()).finish();
+        String title = meetingTitleEditText.getText().toString();
+        Date date = meetingDateDate;
+        String dateString = meetingDateString;
+        String time = meetingTimeString;
+        String personName = meetingPersonEditText.getText().toString();
+        String location = meetingLocationEditText.getText().toString();
+        String note = " ";
+        int done = 0;
+        int age = 0;
+        EventEntity meeting = new EventEntity(MEETING_TYPE, title, date, dateString, time,
+                personName, location, note, done, age);
+        executors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (eventId == DEFAULT_ID) {
+                    mViewModel.addEvent(meeting);
+                } else {
+                    meeting.setId(eventId);
+                    mViewModel.updateEvent(meeting);
                 }
-            });
-
-
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        });
     }
+
     private void deleteMeeting() {
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                if(eventId == DEFAULT_ID) {
+                if (eventId == DEFAULT_ID) {
                     meetingTitleEditText.setText("");
                     meetingDateTV.setText("");
                     meetingTimeTV.setText("");
                     meetingPersonEditText.setText("");
                     meetingLocationEditText.setText("");
-                }else {
+                } else {
                     mViewModel.deleteEvent(eventId);
                     updateTheList();
                 }
@@ -334,7 +299,6 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteMeeting();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -351,6 +315,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
     @Override
     public boolean onBackPressed() {
         return isChanged;

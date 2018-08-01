@@ -33,24 +33,27 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
-import static com.example.user.keepit.activities.AddTodayActivity.IS_BIRTHDAY;
-import static com.example.user.keepit.activities.EditActivity.EVENT_ENTITY_ID;
-import static com.example.user.keepit.fragment.BirthdayFragment.BIRTHDAY_TYPE;
 
+import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
+import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
+import static com.example.user.keepit.utils.Constants.IS_BIRTHDAY;
+
+/**
+ * Class that will display the list of birthdays entered by the user
+ * Divider solution found here:
+ * https://stackoverflow.com/questions/24618829/how-to-add-dividers-and-spaces-between-items-in-recyclerview
+ */
 public class BirthdaysActivity extends AppCompatActivity {
+
     @BindView(R.id.birthdays_recycler_view)
     RecyclerView birthdaysRecyclerView;
-   @BindView(R.id.empty_birthday_list_textView)
-   TextView emptyBirthdayListTV;
-   @BindView(R.id.birthday_adView)
+    @BindView(R.id.empty_birthday_list_textView)
+    TextView emptyBirthdayListTV;
+    @BindView(R.id.birthday_adView)
     AdView adView;
 
     private EventViewModel mViewModel;
-    private AppRoomDatabase roomDB;
     private AppExecutors executors;
-    private EventViewModelFactory factoryVM;
-    private Repository mRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +70,8 @@ public class BirthdaysActivity extends AppCompatActivity {
         adView.loadAd(adRequest);
 
         //customize the recyclerView appearance
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
         birthdaysRecyclerView.addItemDecoration(itemDecoration);
         RecyclerView.LayoutManager layoutManagerReviews = new
@@ -75,31 +79,30 @@ public class BirthdaysActivity extends AppCompatActivity {
         birthdaysRecyclerView.setLayoutManager(layoutManagerReviews);
 
         //Get the birthdayList to set the adapter for
-        roomDB = AppRoomDatabase.getsInstance(this);
+        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors,roomDB, roomDB.eventDao());
-        factoryVM = new EventViewModelFactory(mRepository);
-        mViewModel = ViewModelProviders.of(this,factoryVM).get(EventViewModel.class);
-       updateTheList();
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
+        mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
 
+        updateTheList();
     }
 
     private void updateTheList() {
         mViewModel.getBirthdaysList().observe(this, new Observer<List<EventEntity>>() {
             @Override
             public void onChanged(@Nullable List<EventEntity> eventEntityList) {
-                if(eventEntityList != null && eventEntityList.size() > 0){
+                if (eventEntityList != null && eventEntityList.size() > 0) {
                     birthdaysRecyclerView.setAdapter(new ListAdapter(BirthdaysActivity.this, eventEntityList));
                     birthdaysRecyclerView.setVisibility(View.VISIBLE);
                     emptyBirthdayListTV.setVisibility(View.INVISIBLE);
-                }else if(eventEntityList == null){
+                } else if (eventEntityList == null) {
                     birthdaysRecyclerView.setVisibility(View.INVISIBLE);
                     emptyBirthdayListTV.setVisibility(View.VISIBLE);
                 }
             }
         });
     }
-
 
     //Inflating the menu bar
     @Override
@@ -144,6 +147,7 @@ public class BirthdaysActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
@@ -153,7 +157,6 @@ public class BirthdaysActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteAllBirthdays();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -175,10 +178,8 @@ public class BirthdaysActivity extends AppCompatActivity {
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-
                 mViewModel.deleteAllBirthdays();
                 updateTheList();
-
                 finish();
             }
         });

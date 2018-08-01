@@ -34,8 +34,12 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.user.keepit.activities.AddTodayActivity.DEFAULT_ID;
 
+/**
+ * Class that will display the list of events entered by the user for today, yesterday and tomorrow
+ * Solution for getting next/previous day here:
+ * https://alvinalexander.com/java/java-date-add-get-tomorrows-date
+ */
 public class TodaysActivity extends AppCompatActivity {
 
     @BindView(R.id.todays_recycler_view)
@@ -46,13 +50,11 @@ public class TodaysActivity extends AppCompatActivity {
     Button previousBttn;
     @BindView(R.id.next_day_button)
     Button nextBttn;
-    private AppRoomDatabase roomDB;
-    private AppExecutors executors;
-    private EventViewModelFactory factoryVM;
-    private Repository repository;
-    private EventViewModel eventVM;
     @BindView(R.id.empty_today_list_textView)
     TextView emptyTextViewToday;
+
+    private AppExecutors executors;
+    private EventViewModel eventVM;
     private String todayDateString;
 
     @Override
@@ -63,17 +65,23 @@ public class TodaysActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         //customize the recyclerView appearance
-         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
-         todaysRecylerView.addItemDecoration(itemDecoration);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator_for_recycler));
+        todaysRecylerView.addItemDecoration(itemDecoration);
 
         setUpToday();
     }
+
+    /**
+     * update the list of events by the param entered (the date that is a String type)
+     *
+     * @param dateString
+     */
     private void updateTheList(String dateString) {
-        roomDB = AppRoomDatabase.getsInstance(this);
+        AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         executors = AppExecutors.getInstance();
-        repository = Repository.getsInstance(executors,roomDB,roomDB.eventDao());
-        factoryVM = new EventViewModelFactory(repository);
+        Repository repository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        EventViewModelFactory factoryVM = new EventViewModelFactory(repository);
         eventVM = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
         RecyclerView.LayoutManager layoutManagerReviews = new
                 LinearLayoutManager(this);
@@ -81,21 +89,21 @@ public class TodaysActivity extends AppCompatActivity {
         emptyTextViewToday.setVisibility(View.VISIBLE);
         todaysRecylerView.setVisibility(View.INVISIBLE);
         eventVM.getEventsOfToday(dateString).observe(this, eventEntityList -> {
-            if(eventEntityList == null){
+            if (eventEntityList == null) {
                 todaysRecylerView.setVisibility(View.INVISIBLE);
                 emptyTextViewToday.setVisibility(View.VISIBLE);
-
-
-            }else if(eventEntityList.size() > 0){
-todaysRecylerView.setVisibility(View.VISIBLE);
+            } else if (eventEntityList.size() > 0) {
+                todaysRecylerView.setVisibility(View.VISIBLE);
                 todaysRecylerView.setAdapter(new ListAdapter(this, eventEntityList));
                 emptyTextViewToday.setVisibility(View.INVISIBLE);
             }
-
         });
     }
 
-    private void setUpToday(){
+    /**
+     * set the UI for the today's events to be displayed
+     */
+    private void setUpToday() {
         setTitle(getString(R.string.todays_name));
         previousBttn.setText(getString(R.string.yesterday));
         nextBttn.setText(getString(R.string.tomorrow));
@@ -108,25 +116,25 @@ todaysRecylerView.setVisibility(View.VISIBLE);
             @Override
             public void onClick(View v) {
                 setUpYesterday();
-
             }
         });
         nextBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setUpTomorrow();
-
             }
         });
-
     }
 
+    /**
+     * set the UI for the tomorrow's events to be displayed
+     */
     private void setUpTomorrow() {
         setTitle(getString(R.string.tomorrow));
         previousBttn.setText(getString(R.string.todays_name));
         nextBttn.setVisibility(View.INVISIBLE);
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-       Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -140,9 +148,11 @@ todaysRecylerView.setVisibility(View.VISIBLE);
                 nextBttn.setVisibility(View.VISIBLE);
             }
         });
-
     }
 
+    /**
+     * set the UI for the yesterday's events to be displayed
+     */
     private void setUpYesterday() {
         setTitle(getString(R.string.yesterday));
         previousBttn.setVisibility(View.INVISIBLE);
@@ -171,6 +181,7 @@ todaysRecylerView.setVisibility(View.VISIBLE);
         inflater.inflate(R.menu.todays_menu, menu);
         return true;
     }
+
     //Creating Intents for each menu item.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -208,16 +219,12 @@ todaysRecylerView.setVisibility(View.VISIBLE);
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-
                 eventVM.deleteTodaysEvents(todayDateString);
-                    updateTheList(todayDateString);
-
+                updateTheList(todayDateString);
                 finish();
             }
         });
-
     }
-
 
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -228,7 +235,6 @@ todaysRecylerView.setVisibility(View.VISIBLE);
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the event.
                 deleteAllForToday();
-
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
