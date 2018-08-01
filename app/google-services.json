@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "679809253343",
+    "firebase_url": "https://keepit-5db7e.firebaseio.com",
+    "project_id": "keepit-5db7e",
+    "storage_bucket": "keepit-5db7e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679809253343:android:485452100a79d074",
+        "android_client_info": {
+          "package_name": "com.example.user.keepit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679809253343-q2daq08ohsqjr47ca0on33d19ebljv5a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.keepit",
+            "certificate_hash": "eccf91f3e006378fbcd6a6bf06a2bf021b8fc869"
+          }
+        },
+        {
+          "client_id": "679809253343-nk7fmncnbnmr4pi1egjjpqq4a19bhmud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC716qhXz6vKp67yuihxDnZxP9ujmv0c-c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679809253343-nk7fmncnbnmr4pi1egjjpqq4a19bhmud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
