@@ -24,6 +24,8 @@ import static com.example.user.keepit.utils.Constants.IS_NOTE;
  */
 public class AddTodayActivity extends AppCompatActivity {
 
+    
+
     @BindView(R.id.meeting_button)
     Button addMeetingButton;
     @BindView(R.id.birthday_button)
