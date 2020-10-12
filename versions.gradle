@@ -1,0 +1,39 @@
+def versions = [:]
+
+//A
+versions.appcompat = "1.2.0"
+//B
+
+//C
+versions.constraintlayout = "2.0.1"
+//D
+
+//E
+
+//F
+
+//G
+
+//H
+
+//I
+
+//J
+
+//K
+
+//L
+
+//M
+versions.material = "1.2.1"
+//N
+
+//O
+
+//P
+versions.playServices = "17.0.0"
+
+//R
+versions.recyclerview = "1.1.0"
+
+ext.versions = versions

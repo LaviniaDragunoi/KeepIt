@@ -1,34 +1,34 @@
 package com.example.user.keepit.activities;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
-import com.example.user.keepit.viewModels.EditEventModelFactory;
-import com.example.user.keepit.viewModels.EditEventViewModel;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.api.Api;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,8 +50,8 @@ public class NotesActivity extends AppCompatActivity {
     RecyclerView notesRecyclerView;
     @BindView(R.id.empty_note_list_textView)
     TextView emptyNotesListTV;
-    @BindView(R.id.notes_adView)
-    AdView notesAdView;
+//    @BindView(R.id.notes_adView)
+//    AdView notesAdView;
 
     private EventViewModel mViewModel;
     private AppExecutors executors;
@@ -65,11 +65,11 @@ public class NotesActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.notes_name));
 
-        //load the adView
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        notesAdView.loadAd(adRequest);
+//        //load the adView
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .build();
+//        notesAdView.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this,
@@ -82,8 +82,9 @@ public class NotesActivity extends AppCompatActivity {
 
         //Get the notesList to set the adapter for
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
+        ApiInterface  apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao(), apiInterface);
         EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
         mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
         updateTheList();

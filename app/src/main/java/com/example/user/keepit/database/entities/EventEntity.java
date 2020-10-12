@@ -1,13 +1,21 @@
-package com.example.user.keepit.database;
+package com.example.user.keepit.database.entities;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.user.keepit.database.RouteEntity;
+import com.example.user.keepit.database.convertors.MyRouteEntityTypeConverter;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * EventEntity is stored in RoomDb
@@ -15,17 +23,6 @@ import java.util.Date;
 @Entity(tableName = "events")
 public class EventEntity implements Parcelable {
 
-    public static final Creator<EventEntity> CREATOR = new Creator<EventEntity>() {
-        @Override
-        public EventEntity createFromParcel(Parcel in) {
-            return new EventEntity(in);
-        }
-
-        @Override
-        public EventEntity[] newArray(int size) {
-            return new EventEntity[size];
-        }
-    };
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "eventType")
@@ -35,15 +32,21 @@ public class EventEntity implements Parcelable {
     private String dateString;
     private String time;
     private String personName;
+    private String meetingLocation;
     private String location;
     private String note;
     // this variable will store only 0 or 1, if the event was checked as done the
     // variable will store the 1 value, otherwise it will store value 0;
     private int done;
     private int age;
+    @SerializedName("routes")
+    @Expose
+    @ColumnInfo(name = "routes")
+    @TypeConverters(MyRouteEntityTypeConverter.class)
+    private List<RouteEntity> routes;
 
     public EventEntity(int id, String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note, int done, int age) {
+                       String meetingLocation, String location, String note, int done, int age) {
         this.id = id;
         this.eventType = eventType;
         this.title = title;
@@ -51,6 +54,7 @@ public class EventEntity implements Parcelable {
         this.dateString = dateString;
         this.time = time;
         this.personName = personName;
+        this.meetingLocation = meetingLocation;
         this.location = location;
         this.note = note;
         this.done = done;
@@ -59,14 +63,32 @@ public class EventEntity implements Parcelable {
 
     @Ignore
     public EventEntity(String eventType, String title, Date date, String dateString, String time, String personName,
-                       String location, String note, int done, int age) {
-        this.id = id;
+                       String meetingLocation, String location, String note, int done, int age, List<RouteEntity> routeEntities) {
+
         this.eventType = eventType;
         this.title = title;
         this.date = date;
         this.dateString = dateString;
         this.time = time;
         this.personName = personName;
+        this.meetingLocation = meetingLocation;
+        this.location = location;
+        this.note = note;
+        this.done = done;
+        this.age = age;
+        this.routes = routeEntities;
+    }
+
+    @Ignore
+    public EventEntity(String eventType, String title, Date date, String dateString, String time, String personName,
+                       String meetingLocation, String location, String note, int done, int age) {
+        this.eventType = eventType;
+        this.title = title;
+        this.date = date;
+        this.dateString = dateString;
+        this.time = time;
+        this.personName = personName;
+        this.meetingLocation = meetingLocation;
         this.location = location;
         this.note = note;
         this.done = done;
@@ -80,11 +102,44 @@ public class EventEntity implements Parcelable {
         dateString = in.readString();
         time = in.readString();
         personName = in.readString();
+        meetingLocation = in.readString();
         location = in.readString();
         note = in.readString();
         done = in.readInt();
         age = in.readInt();
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(eventType);
+        dest.writeString(title);
+        dest.writeString(dateString);
+        dest.writeString(time);
+        dest.writeString(personName);
+        dest.writeString(meetingLocation);
+        dest.writeString(location);
+        dest.writeString(note);
+        dest.writeInt(done);
+        dest.writeInt(age);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<EventEntity> CREATOR = new Creator<EventEntity>() {
+        @Override
+        public EventEntity createFromParcel(Parcel in) {
+            return new EventEntity(in);
+        }
+
+        @Override
+        public EventEntity[] newArray(int size) {
+            return new EventEntity[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -142,6 +197,14 @@ public class EventEntity implements Parcelable {
         this.personName = personName;
     }
 
+    public String getMeetingLocation() {
+        return meetingLocation;
+    }
+
+    public void setMeetingLocation(String meetingLocation) {
+        this.meetingLocation = meetingLocation;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -174,22 +237,11 @@ public class EventEntity implements Parcelable {
         this.age = age;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setRoutes(List<RouteEntity> routes) {
+        this.routes = routes;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(eventType);
-        dest.writeString(title);
-        dest.writeString(dateString);
-        dest.writeString(time);
-        dest.writeString(personName);
-        dest.writeString(location);
-        dest.writeString(note);
-        dest.writeInt(done);
-        dest.writeInt(age);
+    public List<RouteEntity> getRoutes() {
+        return routes;
     }
 }

@@ -1,6 +1,6 @@
-package com.example.user.keepit.database;
+package com.example.user.keepit.database.convertors;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 import java.util.Date;
 

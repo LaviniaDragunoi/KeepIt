@@ -1,7 +1,7 @@
 package com.example.user.keepit.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -23,8 +23,6 @@ import static com.example.user.keepit.utils.Constants.IS_NOTE;
  * Class that has buttons to add events ( Meetings, Birthdays, Notes)
  */
 public class AddTodayActivity extends AppCompatActivity {
-
-    
 
     @BindView(R.id.meeting_button)
     Button addMeetingButton;

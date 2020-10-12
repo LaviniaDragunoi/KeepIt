@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MatchMatchStyle">
-
+    style="@style/MatchMatchStyle"
+    android:name="com.google.android.gms.maps.SupportMapFragment">
     <ImageView
-        style="@style/MatchMatchStyle"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
         android:alpha="0.2"
         android:contentDescription="@string/meetings_name"
         android:src="@drawable/people" />
-
     <LinearLayout
         style="@style/MatchMatchStyle"
         android:orientation="vertical">
@@ -108,6 +108,8 @@
 
         </LinearLayout>
 
+        <include
+            layout="@layout/map_fragment"/>
     </LinearLayout>
 
 </FrameLayout>

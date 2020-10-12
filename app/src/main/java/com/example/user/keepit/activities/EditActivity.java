@@ -2,16 +2,17 @@ package com.example.user.keepit.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.user.keepit.R;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
 import com.example.user.keepit.fragment.BirthdayFragment;
 import com.example.user.keepit.fragment.IOnBackPressed;
+import com.example.user.keepit.fragment.MapTestMeetingFragment;
 import com.example.user.keepit.fragment.MeetingFragment;
 import com.example.user.keepit.fragment.NoteFragment;
 
@@ -49,11 +50,14 @@ public class EditActivity extends AppCompatActivity {
                         if (intent.hasExtra(IS_MEETING)) {
                             setTitle(R.string.add_meeting);
                             MeetingFragment addMeetingFragment = new MeetingFragment();
+                            MapTestMeetingFragment mapFragment = new MapTestMeetingFragment();
                             Bundle bundle = new Bundle();
                             bundle.putInt(EVENT_ENTITY_ID, id);
                             addMeetingFragment.setArguments(bundle);
+                            mapFragment.setArguments(bundle);
                             fragmentManager.beginTransaction()
                                     .replace(R.id.add_meeting_container, addMeetingFragment)
+                                    .replace(R.id.fragment_container, mapFragment)
                                     .commit();
                         } else if (intent.hasExtra(IS_BIRTHDAY)) {
                             setTitle(R.string.add_birthday);
@@ -81,12 +85,15 @@ public class EditActivity extends AppCompatActivity {
                             case MEETING_TYPE: {
                                 setTitle(R.string.edit_meeting);
                                 MeetingFragment addMeetingFragment = new MeetingFragment();
+                                MapTestMeetingFragment mapFragment = new MapTestMeetingFragment();
                                 Bundle bundle = new Bundle();
                                 bundle.putInt(EVENT_ENTITY_ID, id);
                                 bundle.putParcelable(EXTRA_EVENT, currentEvent);
                                 addMeetingFragment.setArguments(bundle);
+                                mapFragment.setArguments(bundle);
                                 fragmentManager.beginTransaction()
                                         .replace(R.id.add_meeting_container, addMeetingFragment)
+                                        .replace(R.id.fragment_container, mapFragment)
                                         .commit();
                                 break;
                             }

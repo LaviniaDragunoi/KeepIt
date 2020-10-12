@@ -1,18 +1,16 @@
 package com.example.user.keepit.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ShareCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.core.app.ShareCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +18,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -29,11 +26,12 @@ import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.activities.EditActivity;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -83,8 +81,9 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         noteDeadlineTextView.setOnTouchListener(mTouchListener);
         noteTextEditText.setOnTouchListener(mTouchListener);
         AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(getContext());
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+        Repository mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao(), apiInterface);
 
         if (savedInstanceState != null) {
             if (eventId != DEFAULT_ID) {
@@ -241,11 +240,12 @@ public class NoteFragment extends Fragment implements MyDatePickerFragment.OnDat
         String time = "";
         String personName = "";
         String location = "";
+        String originLocation = "";
         String note = noteTextEditText.getText().toString();
         int done = 0;
         int age = 0;
         EventEntity noteEvent = new EventEntity(NOTE_TYPE, title, date, dateString, time,
-                personName, location, note, done, age);
+                personName, location, originLocation, note, done, age);
 
         executors.diskIO().execute(new Runnable() {
             @Override

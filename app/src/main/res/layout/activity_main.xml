@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/MatchMatchStyle"
     android:background="@color/backgroundColor"
     tools:context=".activities.MainActivity">
 
-    <android.support.v4.widget.NestedScrollView style="@style/MatchMatchStyle">
+    <androidx.core.widget.NestedScrollView style="@style/MatchMatchStyle">
 
         <include layout="@layout/main_grid_activity" />
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         style="@style/FabStyle"
         app:fabSize="normal"
         tools:targetApi="lollipop" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
