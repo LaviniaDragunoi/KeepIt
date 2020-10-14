@@ -16,7 +16,7 @@
         android:layout_marginTop="@dimen/margin_top"
         tools:text="@string/date_title" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todays_recycler_view"
         style="@style/WMatchHWrapStyle"
         android:layout_alignBaseline="@id/todays_date_text_view"

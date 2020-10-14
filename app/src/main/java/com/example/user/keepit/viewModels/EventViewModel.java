@@ -1,10 +1,10 @@
 package com.example.user.keepit.viewModels;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.user.keepit.Repository;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
 
 import java.util.List;
 

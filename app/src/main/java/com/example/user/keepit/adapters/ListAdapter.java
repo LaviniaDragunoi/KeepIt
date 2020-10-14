@@ -2,8 +2,8 @@ package com.example.user.keepit.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,9 @@ import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.activities.EditActivity;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 
@@ -44,8 +46,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     private void initializeACC() {
         AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(mContext);
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         AppExecutors executors = AppExecutors.getInstance();
-        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao(), apiInterface);
     }
 
     @NonNull
@@ -123,7 +126,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         notifyDataSetChanged();
     }
 
-    public class ListViewHolder extends RecyclerView.ViewHolder {
+    public static class ListViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.checked_TV)
         ImageView checkedTV;
         @BindView(R.id.event_type_TV)

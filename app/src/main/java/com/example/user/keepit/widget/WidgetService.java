@@ -12,7 +12,9 @@ import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,9 +42,10 @@ public class WidgetService extends RemoteViewsService {
         Date date = calendar.getTime();
         String dateString = formatter.format(date);
         AppExecutors executors = AppExecutors.getInstance();
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
         Repository repository = Repository.getsInstance(executors,
-                roomDB, roomDB.eventDao());
+                roomDB, roomDB.eventDao(), apiInterface);
         todayEvents = repository.getTodaysEventsList(dateString);
     }
 

@@ -7,7 +7,7 @@
     android:background="@color/backgroundColor"
     tools:context=".activities.MeetingsActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetings_recycler_view"
         style="@style/MatchMatchStyle"
         android:layout_marginBottom="@dimen/buttons_margin"
@@ -18,11 +18,11 @@
         style="@style/TextStyle"
         android:text="@string/empty_list" />
 
-    <com.google.android.gms.ads.AdView
+    <!--com.google.android.gms.ads.AdView
         android:id="@+id/meetings_adView"
         style="@style/WrapWrapStyle"
         android:layout_gravity="bottom|center"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/ads"/>
+        ads:adUnitId="@string/ads"/-->
 
 </FrameLayout>

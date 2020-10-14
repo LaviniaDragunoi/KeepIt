@@ -1,17 +1,12 @@
 package com.example.user.keepit.fragment;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ShareCompat;
-import android.support.v7.app.AlertDialog;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,18 +16,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ShareCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.activities.EditActivity;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EditEventModelFactory;
 import com.example.user.keepit.viewModels.EditEventViewModel;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,9 +51,10 @@ import static com.example.user.keepit.utils.Constants.DEFAULT_ID;
 import static com.example.user.keepit.utils.Constants.EVENT_ENTITY_ID;
 import static com.example.user.keepit.utils.Constants.EXTRA_EVENT;
 import static com.example.user.keepit.utils.Constants.MEETING_TYPE;
+import static java.security.AccessController.getContext;
 
 public class MeetingFragment extends Fragment implements MyDatePickerFragment.OnDatePickerSelected,
-        MyTimePickerFragment.OnTimePickerSelected, IOnBackPressed {
+        MyTimePickerFragment.OnTimePickerSelected, IOnBackPressed{
 
     public boolean isChanged = false;
     @BindView(R.id.picker_meeting_date)
@@ -65,6 +76,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     private AppExecutors executors;
     private int eventId;
     private EditEventModelFactory factory;
+
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @SuppressLint("ClickableViewAccessibility")
         @Override
@@ -73,9 +85,12 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
             return false;
         }
     };
+    private Repository mRepository;
+    private EventEntity currentEvent;
 
     //Empty constructor;
     public MeetingFragment() {
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,8 +106,9 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         meetingLocationEditText.setOnTouchListener(mTouchListener);
 
         AppRoomDatabase roomDb = AppRoomDatabase.getsInstance(getContext());
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao());
+        mRepository = Repository.getsInstance(executors, roomDb, roomDb.eventDao(), apiInterface);
 
         if (savedInstanceState != null) {
             if (eventId != DEFAULT_ID) {
@@ -102,7 +118,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         Bundle bundle = getArguments();
         if (bundle != null) {
             if (bundle.containsKey(EXTRA_EVENT)) {
-                EventEntity currentEvent = bundle.getParcelable(EXTRA_EVENT);
+                currentEvent = bundle.getParcelable(EXTRA_EVENT);
                 eventId = Objects.requireNonNull(currentEvent).getId();
                 populateUI(currentEvent);
             } else {
@@ -112,26 +128,32 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         }
 
         factory = new EditEventModelFactory(mRepository, eventId);
-        updateTheList();
+        mViewModel = new ViewModelProvider(this, factory).get(EditEventViewModel.class);
         showPickerSelected();
 
         showLocationTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLocationOnMap(meetingLocationEditText.getText().toString());
+                mViewModel.setMeetingLocation(meetingLocationEditText.getText().toString());
+                mViewModel.setShowLocation(true);
+            }
+        });
+
+        final String[] meetingLocation = new String[1];
+        mViewModel.getMeetingLocation().observe(getViewLifecycleOwner(), location ->
+        {
+            if(location != null) {
+                meetingLocation[0] = location;
+            }
+        } );
+
+        mViewModel.getShowLocationOnMap().observe(getViewLifecycleOwner(), show ->
+        {
+            if(show) {
+                Toast.makeText(getActivity(), "You have to meet with your friend here: " + meetingLocation[0], Toast.LENGTH_LONG).show();
             }
         });
         return rootView;
-    }
-
-    private void updateTheList() {
-        mViewModel = ViewModelProviders.of(this, factory).get(EditEventViewModel.class);
-        mViewModel.getEvent().observe(this, new Observer<EventEntity>() {
-            @Override
-            public void onChanged(@Nullable EventEntity eventEntity) {
-                mViewModel.getEvent().removeObserver(this);
-            }
-        });
     }
 
     private void populateUI(EventEntity eventEntity) {
@@ -142,7 +164,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         meetingTimeString = eventEntity.getTime();
         meetingTimeTV.setText(meetingTimeString);
         meetingPersonEditText.setText(eventEntity.getPersonName());
-        meetingLocationEditText.setText(eventEntity.getLocation());
+        meetingLocationEditText.setText(eventEntity.getMeetingLocation());
     }
 
     private void showPickerSelected() {
@@ -194,8 +216,7 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     }
 
     private void showLocationOnMap(String location) {
-        //get the location to String
-        location = meetingLocationEditText.getText().toString();
+
         //build the address Uri
         Uri locationUri = new Uri.Builder()
                 .scheme("geo")
@@ -251,20 +272,31 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
         String dateString = meetingDateString;
         String time = meetingTimeString;
         String personName = meetingPersonEditText.getText().toString();
-        String location = meetingLocationEditText.getText().toString();
+        String meetingLocation = meetingLocationEditText.getText().toString();
         String note = " ";
         int done = 0;
         int age = 0;
-        EventEntity meeting = new EventEntity(MEETING_TYPE, title, date, dateString, time,
-                personName, location, note, done, age);
+        EventEntity newMeeting = null;
+        if(currentEvent != null) {
+            mRepository.loadEvent(currentEvent.getId());
+            currentEvent = new EventEntity(MEETING_TYPE, title, date, dateString, time,
+                    personName, meetingLocation, currentEvent.getLocation(), note, done, age);
+            mRepository.loadEvent(currentEvent.getId());
+        } else {
+            newMeeting = new EventEntity(MEETING_TYPE, title, date, dateString, time,
+                    personName, meetingLocation,"", note, done, age);
+        }
+
+
+        EventEntity finalNewMeeting = newMeeting;
         executors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 if (eventId == DEFAULT_ID) {
-                    mViewModel.addEvent(meeting);
+                    mViewModel.addEvent(finalNewMeeting);
                 } else {
-                    meeting.setId(eventId);
-                    mViewModel.updateEvent(meeting);
+                    currentEvent.setId(eventId);
+                    mViewModel.updateEvent(currentEvent);
                 }
                 Objects.requireNonNull(getActivity()).finish();
             }
@@ -272,21 +304,18 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     }
 
     private void deleteMeeting() {
-        executors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if (eventId == DEFAULT_ID) {
-                    meetingTitleEditText.setText("");
-                    meetingDateTV.setText("");
-                    meetingTimeTV.setText("");
-                    meetingPersonEditText.setText("");
-                    meetingLocationEditText.setText("");
-                } else {
-                    mViewModel.deleteEvent(eventId);
-                    updateTheList();
-                }
-                Objects.requireNonNull(getActivity()).finish();
+        executors.diskIO().execute(() -> {
+            if (eventId == DEFAULT_ID) {
+                meetingTitleEditText.setText("");
+                meetingDateTV.setText("");
+                meetingTimeTV.setText("");
+                meetingPersonEditText.setText("");
+                meetingLocationEditText.setText("");
+            } else {
+                mViewModel.deleteEvent(eventId);
+
             }
+            Objects.requireNonNull(getActivity()).finish();
         });
     }
 
@@ -301,13 +330,11 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
                 deleteMeeting();
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the event.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
+        builder.setNegativeButton(R.string.cancel, (dialog, id) -> {
+            // User clicked the "Cancel" button, so dismiss the dialog
+            // and continue editing the event.
+            if (dialog != null) {
+                dialog.dismiss();
             }
         });
 
@@ -320,4 +347,5 @@ public class MeetingFragment extends Fragment implements MyDatePickerFragment.On
     public boolean onBackPressed() {
         return isChanged;
     }
+
 }

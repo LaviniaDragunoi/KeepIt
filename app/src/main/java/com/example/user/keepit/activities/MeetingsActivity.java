@@ -1,37 +1,33 @@
 package com.example.user.keepit.activities;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.user.keepit.AppExecutors;
 import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
-import com.example.user.keepit.viewModels.EditEventViewModel;
-import com.example.user.keepit.viewModels.EditEventModelFactory;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -48,12 +44,13 @@ import static com.example.user.keepit.utils.Constants.IS_MEETING;
  */
 public class MeetingsActivity extends AppCompatActivity {
 
+
     @BindView(R.id.meetings_recycler_view)
     RecyclerView meetingsRecyclerView;
     @BindView(R.id.empty_meeting_list_textView)
     TextView emptyMeetingListTV;
-    @BindView(R.id.meetings_adView)
-    AdView meetingAdVIew;
+    // @BindView(R.id.meetings_adView)
+    //   AdView meetingAdVIew;
     private EventViewModel mViewModel;
     private AppExecutors executors;
 
@@ -65,11 +62,11 @@ public class MeetingsActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.meetings_name));
 
-        //load the adView
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        meetingAdVIew.loadAd(adRequest);
+//        //load the adView
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .build();
+//        meetingAdVIew.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -81,25 +78,23 @@ public class MeetingsActivity extends AppCompatActivity {
 
         //Get the meetingList to set the adapter for
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
+        ApiInterface  apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao(), apiInterface);
         EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
         mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
         updateTheList();
     }
 
     private void updateTheList() {
-        mViewModel.getMeetingsList().observe(this, new Observer<List<EventEntity>>() {
-            @Override
-            public void onChanged(@Nullable List<EventEntity> eventEntityList) {
-                if (eventEntityList != null && eventEntityList.size() > 0) {
-                    meetingsRecyclerView.setAdapter(new ListAdapter(MeetingsActivity.this, eventEntityList));
-                    meetingsRecyclerView.setVisibility(View.VISIBLE);
-                    emptyMeetingListTV.setVisibility(View.INVISIBLE);
-                } else if (eventEntityList == null) {
-                    meetingsRecyclerView.setVisibility(View.INVISIBLE);
-                    emptyMeetingListTV.setVisibility(View.VISIBLE);
-                }
+        mViewModel.getMeetingsList().observe(this, eventEntityList -> {
+            if (eventEntityList != null && eventEntityList.size() > 0) {
+                meetingsRecyclerView.setAdapter(new ListAdapter(MeetingsActivity.this, eventEntityList));
+                meetingsRecyclerView.setVisibility(View.VISIBLE);
+                emptyMeetingListTV.setVisibility(View.INVISIBLE);
+            } else if (eventEntityList == null) {
+                meetingsRecyclerView.setVisibility(View.INVISIBLE);
+                emptyMeetingListTV.setVisibility(View.VISIBLE);
             }
         });
     }

@@ -1,15 +1,15 @@
 package com.example.user.keepit.activities;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,13 +22,14 @@ import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -79,8 +80,9 @@ public class TodaysActivity extends AppCompatActivity {
      */
     private void updateTheList(String dateString) {
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository repository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        Repository repository = Repository.getsInstance(executors, roomDB, roomDB.eventDao(), apiInterface);
         EventViewModelFactory factoryVM = new EventViewModelFactory(repository);
         eventVM = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
         RecyclerView.LayoutManager layoutManagerReviews = new

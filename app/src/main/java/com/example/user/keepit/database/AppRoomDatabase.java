@@ -1,17 +1,22 @@
 package com.example.user.keepit.database;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+
 import android.content.Context;
+
+import com.example.user.keepit.database.convertors.DateConverter;
+import com.example.user.keepit.database.entities.EventEntity;
 
 /**
  * Abstract class for RoomDatabase
  * https://classroom.udacity.com/nanodegrees/nd801/
  */
 @Database(entities = {EventEntity.class},
-        version = 1, exportSchema = false)
+        version = 2, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppRoomDatabase extends RoomDatabase {
 
@@ -19,11 +24,13 @@ public abstract class AppRoomDatabase extends RoomDatabase {
     private static final Object LOCK = new Object();
     private static Builder<AppRoomDatabase> sInstance;
 
+
     public static AppRoomDatabase getsInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                        AppRoomDatabase.class, AppRoomDatabase.DATABASE_NAME);
+                        AppRoomDatabase.class, AppRoomDatabase.DATABASE_NAME)
+                        .fallbackToDestructiveMigration();
             }
         }
         return sInstance.build();

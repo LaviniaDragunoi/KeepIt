@@ -1,16 +1,16 @@
 package com.example.user.keepit.activities;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,11 +22,11 @@ import com.example.user.keepit.R;
 import com.example.user.keepit.Repository;
 import com.example.user.keepit.adapters.ListAdapter;
 import com.example.user.keepit.database.AppRoomDatabase;
-import com.example.user.keepit.database.EventEntity;
+import com.example.user.keepit.database.entities.EventEntity;
+import com.example.user.keepit.networking.ApiClient;
+import com.example.user.keepit.networking.ApiInterface;
 import com.example.user.keepit.viewModels.EventViewModel;
 import com.example.user.keepit.viewModels.EventViewModelFactory;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,8 +49,8 @@ public class BirthdaysActivity extends AppCompatActivity {
     RecyclerView birthdaysRecyclerView;
     @BindView(R.id.empty_birthday_list_textView)
     TextView emptyBirthdayListTV;
-    @BindView(R.id.birthday_adView)
-    AdView adView;
+//    @BindView(R.id.birthday_adView)
+//    AdView adView;
 
     private EventViewModel mViewModel;
     private AppExecutors executors;
@@ -63,11 +63,11 @@ public class BirthdaysActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.birthday_name));
 
-        //load the adView
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        adView.loadAd(adRequest);
+//        //load the adView
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .build();
+//        adView.loadAd(adRequest);
 
         //customize the recyclerView appearance
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this,
@@ -80,8 +80,9 @@ public class BirthdaysActivity extends AppCompatActivity {
 
         //Get the birthdayList to set the adapter for
         AppRoomDatabase roomDB = AppRoomDatabase.getsInstance(this);
+        ApiInterface  apiInterface = ApiClient.getClient().create(ApiInterface.class);
         executors = AppExecutors.getInstance();
-        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao());
+        Repository mRepository = Repository.getsInstance(executors, roomDB, roomDB.eventDao(), apiInterface);
         EventViewModelFactory factoryVM = new EventViewModelFactory(mRepository);
         mViewModel = ViewModelProviders.of(this, factoryVM).get(EventViewModel.class);
 
